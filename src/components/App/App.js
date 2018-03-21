@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import styles from './App.css';
 import NoteCard from '../NoteCard/NoteCard';
 import _ from 'lodash';
-import NoteForm from '../NoteForm/NoteForm'
+import NoteForm from '../NoteForm/NoteForm';
+import { database } from '../../firebase';
 
 class App extends Component {
 	constructor(props) {
@@ -21,6 +22,29 @@ class App extends Component {
 				}
 			]
 		};
+
+		// bind
+		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleChange(e) {
+		this.setState({
+			[e.target.name]: e.target.value
+		});
+	}
+
+	handleSubmit(e) {
+		e.preventDefault();
+		const note = {
+			title: this.state.title,
+			body: this.state.body
+		};
+		database.push(note);
+		this.setState({
+			title: '',
+			body: ''
+		})
 	}
 
 	renderNotes() {
@@ -38,7 +62,11 @@ class App extends Component {
 		return (
 			<div className={styles.container}>
 				<h1>Note Vote</h1>
-				<NoteForm />
+				<NoteForm
+					handleChange={this.handleChange}
+					handleSubmit={this.handleSubmit}
+					state={this.state}
+				/>
 				{this.renderNotes()}
 			</div>
 		);
