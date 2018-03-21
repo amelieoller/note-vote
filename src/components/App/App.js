@@ -4,6 +4,8 @@ import NoteCard from '../NoteCard/NoteCard';
 import _ from 'lodash';
 import NoteForm from '../NoteForm/NoteForm';
 import { database } from '../../firebase';
+import { connect } from 'react-redux';
+import { getNotes, saveNote } from '../../actions/noteActions';
 
 class App extends Component {
 	constructor(props) {
@@ -17,15 +19,11 @@ class App extends Component {
 		// bind
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
-		this.renderNotes = this.renderNotes.bind(this);		
+		this.renderNotes = this.renderNotes.bind(this);
 	}
 
 	componentDidMount() {
-		database.on('value', snapshot => {
-			this.setState({
-				notes: snapshot.val()
-			});
-		});
+		this.props.getNotes();
 	}
 
 	handleChange(e) {
@@ -40,7 +38,7 @@ class App extends Component {
 			title: this.state.title,
 			body: this.state.body
 		};
-		database.push(note);
+		this.props.saveNote(note);
 		this.setState({
 			title: '',
 			body: ''
@@ -48,7 +46,7 @@ class App extends Component {
 	}
 
 	renderNotes() {
-		return _.map(this.state.notes, (note, key) => {
+		return _.map(this.props.notes, (note, key) => {
 			return (
 				<NoteCard key={key}>
 					<h3>{note.title}</h3>
@@ -73,4 +71,10 @@ class App extends Component {
 	}
 }
 
-export default App;
+function mapStateToProps(state) {
+	return {
+		notes: state.notes
+	};
+}
+
+export default connect(mapStateToProps, { getNotes, saveNote })(App);
