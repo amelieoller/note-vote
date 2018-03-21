@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import './App.css';
+import styles from './App.css';
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <h1>Note Vote</h1>
-      </div>
-    );
-  }
+	render() {
+		return (
+			<div className={styles.container}>
+				<h1>Note Vote</h1>
+			</div>
+		);
+	}
 }
 
 export default App;
