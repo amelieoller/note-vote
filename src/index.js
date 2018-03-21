@@ -7,6 +7,9 @@ import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer from './reducers';
 import thunk from 'redux-thunk';
+import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import Navigation from './components/Navigation/Navigation';
+import Login from './components/Login/Login';
 
 const store = createStore(
 	rootReducer,
@@ -15,7 +18,15 @@ const store = createStore(
 
 ReactDOM.render(
 	<Provider store={store}>
-		<App />
+		<BrowserRouter>
+			<div>
+				<Navigation />
+				<Switch>
+					<Route path="/" component={App} exact={true} />
+					<Route path="/login" component={Login} exact={true} />
+				</Switch>
+			</div>
+		</BrowserRouter>
 	</Provider>,
 	document.getElementById('root')
 );
