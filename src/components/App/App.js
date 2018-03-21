@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styles from './App.css';
 import NoteCard from '../NoteCard/NoteCard';
 import _ from 'lodash';
+import NoteForm from '../NoteForm/NoteForm'
 
 class App extends Component {
 	constructor(props) {
@@ -37,6 +38,7 @@ class App extends Component {
 		return (
 			<div className={styles.container}>
 				<h1>Note Vote</h1>
+				<NoteForm />
 				{this.renderNotes()}
 			</div>
 		);
