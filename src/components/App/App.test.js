@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import { shallow, mount, render } from 'enzyme';
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+describe('App Component', () => {
+	test('renders without crashing', () => {
+		const wrapper = shallow(<App>Note Vote</App>);
+		expect(wrapper).toMatchSnapshot();
+	});
+
 });
