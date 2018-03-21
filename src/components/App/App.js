@@ -11,21 +11,21 @@ class App extends Component {
 		this.state = {
 			title: '',
 			body: '',
-			notes: [
-				{
-					title: 'First Note Title',
-					body: 'First Note Body'
-				},
-				{
-					title: 'Second Note Title',
-					body: 'Second Note Body'
-				}
-			]
+			notes: ''
 		};
 
 		// bind
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.renderNotes = this.renderNotes.bind(this);		
+	}
+
+	componentDidMount() {
+		database.on('value', snapshot => {
+			this.setState({
+				notes: snapshot.val()
+			});
+		});
 	}
 
 	handleChange(e) {
@@ -44,7 +44,7 @@ class App extends Component {
 		this.setState({
 			title: '',
 			body: ''
-		})
+		});
 	}
 
 	renderNotes() {
