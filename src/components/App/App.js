@@ -5,15 +5,14 @@ import _ from 'lodash';
 import NoteForm from '../NoteForm/NoteForm';
 import { database } from '../../firebase';
 import { connect } from 'react-redux';
-import { getNotes, saveNote } from '../../actions/noteActions';
+import { getNotes, saveNote, deleteNote } from '../../actions/noteActions';
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			title: '',
-			body: '',
-			notes: ''
+			body: ''
 		};
 
 		// bind
@@ -46,11 +45,12 @@ class App extends Component {
 	}
 
 	renderNotes() {
-		return _.map(this.props.notes, (note, key) => {
+		return _.map(this.props.notes, (note, id) => {
 			return (
-				<NoteCard key={key}>
+				<NoteCard key={id}>
 					<h3>{note.title}</h3>
 					<p>{note.body}</p>
+					<button onClick={() => this.props.deleteNote(id)}>Delete</button>
 				</NoteCard>
 			);
 		});
@@ -77,4 +77,4 @@ function mapStateToProps(state) {
 	};
 }
 
-export default connect(mapStateToProps, { getNotes, saveNote })(App);
+export default connect(mapStateToProps, { getNotes, saveNote, deleteNote })(App);
