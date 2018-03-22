@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { googleLogin } from '../../actions/userActions';
+import {
+	googleLogin,
+	passwordSignUp,
+	passwordSignIn,
+	getUser
+} from '../../actions/userActions';
 import { auth } from '../../firebase';
 import styles from './Login.scss';
 
@@ -18,17 +23,10 @@ class Login extends Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSignIn = this.handleSignIn.bind(this);
 		this.handleSignUp = this.handleSignUp.bind(this);
-		this.handleSignOut = this.handleSignOut.bind(this);
 	}
 
 	componentDidMount() {
-		auth.onAuthStateChanged(firebaseUser => {
-			if (firebaseUser) {
-				console.log(firebaseUser);
-			} else {
-				console.log('not logged in');
-			}
-		});
+		this.props.getUser();
 	}
 
 	handleChange(e) {
@@ -39,22 +37,12 @@ class Login extends Component {
 
 	handleSignIn(e) {
 		e.preventDefault();
-		const email = this.state.email;
-		const password = this.state.password;
-		const promise = auth.signInWithEmailAndPassword(email, password);
-		promise.catch(e => console.log(e.message));
+		passwordSignIn(this.state.email, this.state.password);
 	}
 
 	handleSignUp(e) {
 		e.preventDefault();
-		const email = this.state.email;
-		const password = this.state.password;
-		const promise = auth.createUserWithEmailAndPassword(email, password);
-		promise.catch(e => console.log(e.message));
-	}
-
-	handleSignOut(e) {
-		auth.signOut();
+		passwordSignUp(this.state.email, this.state.password);
 	}
 
 	toggleClass(e) {
@@ -67,7 +55,6 @@ class Login extends Component {
 	}
 
 	render() {
-		console.log(this.state);
 		return (
 			<div className={(styles.wrapper, styles.fadeInDown)}>
 				<div id={styles.formContent}>
@@ -135,18 +122,10 @@ class Login extends Component {
 								onClick={this.handleSignUp}
 							/>
 						) : null}
-						{/* <input
-							type="submit"
-							className={(styles.fadeIn, styles.fourth)}
-							value="Sign Out"
-							onClick={this.handleSignOut}
-						/> */}
 					</form>
 
 					<div id={styles.footer}>
-						<a href="#">
-							Forgot Password?
-						</a>
+						<a href="#">Forgot Password?</a>
 					</div>
 				</div>
 			</div>
@@ -154,4 +133,15 @@ class Login extends Component {
 	}
 }
 
-export default connect(null, { googleLogin })(Login);
+const mapStateToProps = state => {
+	return {
+		user: state.user
+	};
+};
+
+export default connect(mapStateToProps, {
+	googleLogin,
+	passwordSignUp,
+	passwordSignIn,
+	getUser
+})(Login);
