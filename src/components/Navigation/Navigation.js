@@ -1,11 +1,20 @@
 import React from 'react';
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import styles from './Navigation.scss';
 
 const Navigation = () => (
-	<nav>
-		<Link to="/">Home</Link>
-		<Link to="/login">Login</Link>
-	</nav>
+	<div className={styles.nav}>
+		<ul>
+			<li className={styles.home}>
+				<Link to="/">Home</Link>
+			</li>
+			<li className={styles.contact}>
+				<Link to="/login" className={styles.active}>
+					Login
+				</Link>
+			</li>
+		</ul>
+	</div>
 );
 
 export default Navigation;
