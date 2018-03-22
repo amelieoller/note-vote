@@ -35,7 +35,8 @@ class App extends Component {
 		e.preventDefault();
 		const note = {
 			title: this.state.title,
-			body: this.state.body
+			body: this.state.body,
+			votes: 0
 		};
 		this.props.saveNote(note);
 		this.setState({
@@ -47,11 +48,12 @@ class App extends Component {
 	renderNotes() {
 		return _.map(this.props.notes, (note, id) => {
 			return (
-				<NoteCard key={id}>
-					<h3>{note.title}</h3>
-					<p>{note.body}</p>
-					<button onClick={() => this.props.deleteNote(id)}>Delete</button>
-				</NoteCard>
+				<NoteCard
+					key={id}
+					id={id}
+					note={note}
+					deleteNote={this.props.deleteNote}
+				/>
 			);
 		});
 	}
@@ -77,4 +79,6 @@ function mapStateToProps(state) {
 	};
 }
 
-export default connect(mapStateToProps, { getNotes, saveNote, deleteNote })(App);
+export default connect(mapStateToProps, { getNotes, saveNote, deleteNote })(
+	App
+);
