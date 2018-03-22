@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { googleLogin } from '../../actions/userActions';
 import { auth } from '../../firebase';
+import styles from './Login.scss';
 
 class Login extends Component {
 	constructor(props) {
@@ -9,7 +10,9 @@ class Login extends Component {
 
 		this.state = {
 			email: '',
-			password: ''
+			password: '',
+			signin: true,
+			signup: false
 		};
 
 		this.handleChange = this.handleChange.bind(this);
@@ -19,7 +22,6 @@ class Login extends Component {
 	}
 
 	componentDidMount() {
-		const btnLogout = document.getElementById('btnLogout');
 		auth.onAuthStateChanged(firebaseUser => {
 			if (firebaseUser) {
 				console.log(firebaseUser);
@@ -55,36 +57,98 @@ class Login extends Component {
 		auth.signOut();
 	}
 
+	toggleClass(e) {
+		if (!this.state[e.target.name]) {
+			this.setState({
+				signin: !this.state.signin,
+				signup: !this.state.signup
+			});
+		}
+	}
+
 	render() {
+		console.log(this.state);
 		return (
-			<div>
-				<div>
-					<label htmlFor="email">Email</label>
-					<input
-						type="text"
-						id="email"
-						name="email"
-						onChange={this.handleChange}
-					/>
-					<label htmlFor="password">Password</label>
-					<input
-						type="password"
-						id="password"
-						name="password"
-						onChange={this.handleChange}
-					/>
-					<button type="submit" onClick={this.handleSignIn}>
-						Log In
-					</button>
-					<button type="submit" onClick={this.handleSignUp}>
-						Sign Up
-					</button>
-					<button type="submit" onClick={this.handleSignOut}>
-						Log Out
-					</button>
+			<div className={(styles.wrapper, styles.fadeInDown)}>
+				<div id={styles.formContent}>
+					<div>
+						<input
+							type="submit"
+							className={(styles.fadeIn, styles.fourth, styles.google)}
+							onClick={this.props.googleLogin}
+							value="Login with Google"
+						/>
+					</div>
+
+					<div className={styles.tabs}>
+						<a
+							className={this.state.signin ? styles.active : null}
+							name="signin"
+							onClick={e => this.toggleClass(e)}
+						>
+							Sign In
+						</a>
+						or
+						<a
+							className={this.state.signup ? styles.active : null}
+							name="signup"
+							onClick={e => this.toggleClass(e)}
+						>
+							Sign Up
+						</a>
+					</div>
+
+					<form>
+						<input
+							type="text"
+							id={styles.login}
+							className={(styles.fadeIn, styles.second)}
+							name="email"
+							placeholder="Email"
+							onFocus={e => (e.target.placeholder = '')}
+							onBlur={e => (e.target.placeholder = 'Email')}
+							onChange={this.handleChange}
+						/>
+						<input
+							type="password"
+							id={styles.password}
+							className={(styles.fadeIn, styles.third)}
+							name="password"
+							placeholder="Password"
+							onFocus={e => (e.target.placeholder = '')}
+							onBlur={e => (e.target.placeholder = 'Password')}
+							onChange={this.handleChange}
+						/>
+						{this.state.signin ? (
+							<input
+								type="submit"
+								className={(styles.fadeIn, styles.fourth)}
+								value="Log In"
+								onClick={this.handleSignIn}
+							/>
+						) : null}
+						{this.state.signup ? (
+							<input
+								type="submit"
+								className={(styles.fadeIn, styles.fourth)}
+								value="Sign Up"
+								onClick={this.handleSignUp}
+							/>
+						) : null}
+						{/* <input
+							type="submit"
+							className={(styles.fadeIn, styles.fourth)}
+							value="Sign Out"
+							onClick={this.handleSignOut}
+						/> */}
+					</form>
+
+					<div id={styles.footer}>
+						<a href="#">
+							Forgot Password?
+						</a>
+					</div>
 				</div>
-				<h1>Login Page</h1>
-				<button onClick={this.props.googleLogin}>Login with Google</button>
 			</div>
 		);
 	}
