@@ -29,6 +29,20 @@ class Login extends Component {
 		this.props.getUser();
 	}
 
+	// Send user back to home if logged in already
+	componentWillMount() {
+		if (this.props.user !== null) {
+			this.props.history.push('/');
+		}
+	}
+
+	// Redirect user to home after logging in
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.user !== null) {
+			nextProps.history.push('/');
+		}
+	}
+
 	handleChange(e) {
 		this.setState({
 			[e.target.name]: e.target.value
