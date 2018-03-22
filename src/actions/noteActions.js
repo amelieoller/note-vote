@@ -21,3 +21,7 @@ export function saveNote(note) {
 export function deleteNote(id) {
 	return dispatch => database.child(id).remove()
 }
+
+export function updateNote(id, note) {
+	return dispatch => database.child(id).update(note)
+}
