@@ -12,9 +12,14 @@ a {
 	text-decoration: none;
 	color: lighten($blue, 15%);
 	font-weight: 400;
+	cursor: pointer;
 }
 
 a:hover,
 a:active {
 	color: $blue;
+}
+
+button {
+	cursor: pointer;
 }
