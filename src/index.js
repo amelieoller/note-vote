@@ -10,7 +10,9 @@ import thunk from 'redux-thunk';
 import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import Navigation from './components/Navigation/Navigation';
 import Login from './components/Login/Login';
-import styles from './index.scss'
+import styles from './index.scss';
+import Loading from './components/Loading/Loading';
+import Authentication from './components/Authentication/Authentication';
 
 const store = createStore(
 	rootReducer,
@@ -22,10 +24,15 @@ ReactDOM.render(
 		<BrowserRouter>
 			<div>
 				<Navigation />
-				<Switch>
-					<Route path="/" component={App} exact={true} />
-					<Route path="/login" component={Login} exact={true} />
-				</Switch>
+				<Loading>
+					<Switch>
+						<Route path="/login" component={Login} exact={true} />
+						<Authentication>
+							{/* <Navigation /> */}
+							<Route path="/" component={App} exact={true} />
+						</Authentication>
+					</Switch>
+				</Loading>
 			</div>
 		</BrowserRouter>
 	</Provider>,
