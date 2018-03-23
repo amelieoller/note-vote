@@ -1,27 +1,49 @@
-import { GET_NOTES } from './actionTypes';
+import { GET_NOTES, NOTES_STATUS } from './actionTypes';
 import { database } from '../firebase';
 
 export function getNotes() {
 	return dispatch => {
-		database.on('value', snapshot => {
-			dispatch({
-				type: GET_NOTES,
-				notes: snapshot.val()
-			});
+		// As soon as function fires set loading to true
+		dispatch({
+			type: NOTES_STATUS,
+			payload: true
 		});
+
+		database.on(
+			'value',
+			snapshot => {
+				dispatch({
+					type: GET_NOTES,
+					notes: snapshot.val()
+				});
+
+				// Once notes are received set loading to false
+				dispatch({
+					type: NOTES_STATUS,
+					payload: false
+				});
+				// Wait until something changes and try again
+			},
+			() => {
+				dispatch({
+					type: NOTES_STATUS,
+					payload: -1
+				});
+			}
+		);
 	};
 }
 
 export function saveNote(note) {
-   return dispatch => {
-      database.push(note)
-   }
+	return dispatch => {
+		database.push(note);
+	};
 }
 
 export function deleteNote(id) {
-	return dispatch => database.child(id).remove()
+	return dispatch => database.child(id).remove();
 }
 
 export function updateNote(id, note) {
-	return dispatch => database.child(id).update(note)
+	return dispatch => database.child(id).update(note);
 }
