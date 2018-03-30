@@ -10,12 +10,8 @@ const NoteCard = ({ id, note, deleteNote }) => {
 				<p>{note.body}</p>
 			</div>
 			<div className={styles.buttons}>
-				<div className={styles.delete}>
-					<button onClick={() => deleteNote(id)}>Delete</button>
-				</div>
-				<div className={styles.vote}>
-					<Vote note={note} id={id} />
-				</div>
+				<button onClick={() => deleteNote(id)}>Delete</button>
+				<Vote note={note} id={id} />
 			</div>
 		</div>
 	);
