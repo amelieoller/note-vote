@@ -6,4 +6,13 @@
    color: $white;
    margin: 15px;
    padding: 15px;
+   overflow: hidden;
+}
+
+.text {
+   float: left;
+}
+
+.buttons {
+   float: right;
 }
