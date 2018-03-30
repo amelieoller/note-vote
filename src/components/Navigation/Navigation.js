@@ -10,27 +10,31 @@ class Navigation extends Component {
 		return (
 			<div className={styles.nav}>
 				<ul>
-					<li className={styles.home}>
-						<NavLink exact to="/" activeClassName={styles.active}>
-							Home
-						</NavLink>
-					</li>
-					<li className={styles.contact}>
-						{this.props.user === null ? (
+					{this.props.user === null ? (
+						<li>
 							<NavLink exact to="/login" activeClassName={styles.active}>
 								Login
 							</NavLink>
-						) : (
-							<NavLink
-							exact
-								to="/login"
-								activeClassName={styles.active}
-								onClick={() => this.props.logout()}
-							>
-								Logout
-							</NavLink>
-						)}
-					</li>
+						</li>
+					) : (
+						<span>
+							<li>
+								<NavLink exact to="/" activeClassName={styles.active}>
+									Home
+								</NavLink>
+							</li>
+							<li>
+								<NavLink
+									exact
+									to="/login"
+									activeClassName={styles.active}
+									onClick={() => this.props.logout()}
+								>
+									Logout
+								</NavLink>
+							</li>
+						</span>
+					)}
 				</ul>
 			</div>
 		);
