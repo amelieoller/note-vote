@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import { NavLink } from 'react-router-dom';
 import styles from './Navigation.scss';
 import { logout } from '../../actions/userActions';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 class Navigation extends Component {
 	render() {
@@ -10,22 +11,24 @@ class Navigation extends Component {
 			<div className={styles.nav}>
 				<ul>
 					<li className={styles.home}>
-						<Link to="/">Home</Link>
+						<NavLink exact to="/" activeClassName={styles.active}>
+							Home
+						</NavLink>
 					</li>
-
 					<li className={styles.contact}>
 						{this.props.user === null ? (
-							<Link to="/login" className={styles.active}>
+							<NavLink exact to="/login" activeClassName={styles.active}>
 								Login
-							</Link>
+							</NavLink>
 						) : (
-							<Link
+							<NavLink
+							exact
 								to="/login"
-								className={styles.active}
+								activeClassName={styles.active}
 								onClick={() => this.props.logout()}
 							>
 								Logout
-							</Link>
+							</NavLink>
 						)}
 					</li>
 				</ul>
@@ -40,4 +43,7 @@ const mapStateToProps = state => {
 	};
 };
 
-export default connect(mapStateToProps, { logout })(Navigation);
+// Fix routing issue by adding withRouter or pure: false to connect (https://github.com/ReactTraining/react-router/issues/4638)
+
+// export default connect(mapStateToProps, { logout }, null, { pure: false })(Navigation);
+export default withRouter(connect(mapStateToProps, { logout })(Navigation));
