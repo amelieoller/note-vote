@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styles from './App.css';
+import styles from './App.scss';
 import NoteCard from '../NoteCard/NoteCard';
 import _ from 'lodash';
 import NoteForm from '../NoteForm/NoteForm';
