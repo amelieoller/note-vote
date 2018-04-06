@@ -36,7 +36,8 @@ class App extends Component {
 		const note = {
 			title: this.state.title,
 			body: this.state.body,
-			votes: 0
+			votes: 0,
+			uid: this.props.user.uid
 		};
 		this.props.saveNote(note);
 		this.setState({
@@ -53,6 +54,7 @@ class App extends Component {
 					id={id}
 					note={note}
 					deleteNote={this.props.deleteNote}
+					user={this.props.user}
 				/>
 			);
 		});
@@ -74,7 +76,8 @@ class App extends Component {
 
 function mapStateToProps(state) {
 	return {
-		notes: state.notes
+		notes: state.notes,
+		user: state.user
 	};
 }
 
