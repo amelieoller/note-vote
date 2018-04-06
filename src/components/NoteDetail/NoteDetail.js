@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { withRouter } from 'react-router-dom';
 
 class NoteDetail extends Component {
 	render() {
@@ -9,8 +8,13 @@ class NoteDetail extends Component {
 		return (
 			<div>
 				<Link to="/">Back</Link>
-				<h1>{note.title}</h1>
-				<p>{note.body}</p>
+				{/* Fix this to get state after refresh */}
+				{note && (
+					<div>
+						<h1>{note.title}</h1>
+						<p>{note.body}</p>
+					</div>
+				)}
 			</div>
 		);
 	}
@@ -23,4 +27,4 @@ function mapStateToProps(state, ownProps) {
 	};
 }
 
-export default withRouter(connect(mapStateToProps)(NoteDetail));
+export default connect(mapStateToProps)(NoteDetail);
