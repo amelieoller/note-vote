@@ -13,6 +13,7 @@ import Login from './components/Login/Login';
 import styles from './index.scss';
 import Loading from './components/Loading/Loading';
 import Authentication from './components/Authentication/Authentication';
+import NoteDetail from './components/NoteDetail/NoteDetail'
 
 const store = createStore(
 	rootReducer,
@@ -29,6 +30,7 @@ ReactDOM.render(
 						<Route path="/login" component={Login} exact={true} />
 						<Authentication>
 							{/* <Navigation /> */}
+							<Route path="/:id" component={NoteDetail} exact={true} />
 							<Route path="/" component={App} exact={true} />
 						</Authentication>
 					</Switch>
