@@ -51,12 +51,12 @@ class Login extends Component {
 
 	handleSignIn(e) {
 		e.preventDefault();
-		passwordSignIn(this.state.email, this.state.password);
+		this.props.passwordSignIn(this.state.email, this.state.password);
 	}
 
 	handleSignUp(e) {
 		e.preventDefault();
-		passwordSignUp(this.state.email, this.state.password);
+		this.props.passwordSignUp(this.state.email, this.state.password);
 	}
 
 	toggleClass(e) {
