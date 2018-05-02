@@ -6,8 +6,8 @@ import {
 	passwordSignIn,
 	getUser
 } from '../../actions/userActions';
-import { auth } from '../../firebase';
 import styles from './Login.scss';
+import Errors from '../Errors/Errors'
 
 class Login extends Component {
 	constructor(props) {
@@ -71,6 +71,7 @@ class Login extends Component {
 	render() {
 		return (
 			<div className={(styles.wrapper, styles.fadeInDown)}>
+			<Errors />
 				<div id={styles.formContent}>
 					<div>
 						<input
