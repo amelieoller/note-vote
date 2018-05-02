@@ -3,7 +3,6 @@ import styles from './App.scss';
 import NoteCard from '../NoteCard/NoteCard';
 import _ from 'lodash';
 import NoteForm from '../NoteForm/NoteForm';
-import { database } from '../../firebase';
 import { connect } from 'react-redux';
 import { getNotes, saveNote, deleteNote } from '../../actions/noteActions';
 
@@ -46,13 +45,24 @@ class App extends Component {
 		});
 	}
 
+	sortProperties(obj) {
+		var sortable = [];
+		for (var key in obj)
+			if (obj.hasOwnProperty(key)) sortable.push([key, obj[key]]);
+		sortable.sort(function(a, b) {
+			return b[1].votes - a[1].votes;
+		});
+		// array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
+		return sortable;
+	}
+
 	renderNotes() {
-		return _.map(this.props.notes, (note, id) => {
+		return _.map(this.sortProperties(this.props.notes), (note, id) => {
 			return (
 				<NoteCard
-					key={id}
-					id={id}
-					note={note}
+					key={note[0]}
+					id={note[0]}
+					note={note[1]}
 					deleteNote={this.props.deleteNote}
 					user={this.props.user}
 				/>
