@@ -7,7 +7,7 @@ class Authenticating extends Component {
 	componentDidUpdate() {
 		// Make sure the loading is done, then if there is no user push them to login page
 		const { userLoading, user } = this.props;
-		if (userLoading == false && !user) {
+		if (userLoading === false && !user) {
 			this.props.history.push('/login');
 		}
 	}

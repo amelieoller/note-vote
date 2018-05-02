@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styles from './NoteForm.scss'
 
 const NoteForm = ({handleChange, handleSubmit, state}) => {
