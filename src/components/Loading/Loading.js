@@ -16,7 +16,7 @@ class Loading extends Component {
 
 		// If we haven't tried to load notes, load notes
 		if (notesLoading === undefined) {
-			this.props.getUser();
+			this.props.getNotes();
 		}
 	}
 
