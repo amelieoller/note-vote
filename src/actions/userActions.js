@@ -13,6 +13,14 @@ export function passwordSignUp(email, password) {
 	};
 }
 
+export function sendPasswordResetEmail(email) {
+	return dispatch => {
+		auth.sendPasswordResetEmail(email).catch(error => {
+			dispatch({ type: ADD_ERROR, error: error.message });
+		});
+	};
+}
+
 export function passwordSignIn(email, password) {
 	return dispatch =>
 		auth.signInWithEmailAndPassword(email, password).catch(function(error) {

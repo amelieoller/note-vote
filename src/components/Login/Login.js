@@ -4,10 +4,11 @@ import {
 	googleLogin,
 	passwordSignUp,
 	passwordSignIn,
-	getUser
+	getUser,
+	sendPasswordResetEmail
 } from '../../actions/userActions';
 import styles from './Login.scss';
-import Errors from '../Errors/Errors'
+import Errors from '../Errors/Errors';
 
 class Login extends Component {
 	constructor(props) {
@@ -23,6 +24,7 @@ class Login extends Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSignIn = this.handleSignIn.bind(this);
 		this.handleSignUp = this.handleSignUp.bind(this);
+		this.handleForgotPassword = this.handleForgotPassword.bind(this);
 	}
 
 	componentDidMount() {
@@ -59,6 +61,11 @@ class Login extends Component {
 		this.props.passwordSignUp(this.state.email, this.state.password);
 	}
 
+	handleForgotPassword(e) {
+		e.preventDefault();
+		this.props.sendPasswordResetEmail(this.state.email);
+	}
+
 	toggleClass(e) {
 		if (!this.state[e.target.name]) {
 			this.setState({
@@ -71,7 +78,7 @@ class Login extends Component {
 	render() {
 		return (
 			<div className={(styles.wrapper, styles.fadeInDown)}>
-			<Errors />
+				<Errors />
 				<div id={styles.formContent}>
 					<div>
 						<input
@@ -140,7 +147,9 @@ class Login extends Component {
 					</form>
 
 					<div id={styles.footer}>
-						<a href="#">Forgot Password?</a>
+						<button onClick={this.handleForgotPassword}>
+							Forgot Password?
+						</button>
 					</div>
 				</div>
 			</div>
@@ -158,5 +167,6 @@ export default connect(mapStateToProps, {
 	googleLogin,
 	passwordSignUp,
 	passwordSignIn,
-	getUser
+	getUser,
+	sendPasswordResetEmail
 })(Login);
