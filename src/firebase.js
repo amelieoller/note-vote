@@ -11,6 +11,8 @@ var config = {
 };
 firebase.initializeApp(config);
 
-export const database = firebase.database().ref('/notes');
+export const noteDb = firebase.database().ref('/notes');
+export const categoryDb = firebase.database().ref('/categories');
+
 export const auth = firebase.auth();
 export const googleProvider = new firebase.auth.GoogleAuthProvider();

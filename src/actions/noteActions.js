@@ -1,5 +1,5 @@
 import { GET_NOTES, NOTES_STATUS } from './actionTypes';
-import { database } from '../firebase';
+import { noteDb, categoryDb } from '../firebase';
 
 export function getNotes() {
 	return dispatch => {
@@ -9,7 +9,7 @@ export function getNotes() {
 			payload: true
 		});
 
-		database.on(
+		noteDb.on(
 			'value',
 			snapshot => {
 				dispatch({
@@ -36,14 +36,14 @@ export function getNotes() {
 
 export function saveNote(note) {
 	return dispatch => {
-		database.push(note);
+		noteDb.push(note);
 	};
 }
 
 export function deleteNote(id) {
-	return dispatch => database.child(id).remove();
+	return dispatch => noteDb.child(id).remove();
 }
 
 export function updateNote(id, note) {
-	return dispatch => database.child(id).update(note);
+	return dispatch => noteDb.child(id).update(note);
 }
