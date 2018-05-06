@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { getUser } from '../../actions/userActions';
 import { getNotes } from '../../actions/noteActions';
+import { getCategories } from '../../actions/categoryActions';
 
 class Loading extends Component {
 	componentWillMount() {
@@ -18,12 +19,17 @@ class Loading extends Component {
 		if (notesLoading === undefined) {
 			this.props.getNotes();
 		}
+
+		// If we haven't tried to load categories, load categories
+		if (notesLoading === undefined) {
+			this.props.getCategories();
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
 		// Wait for the user to get authenticated and then load the notes
 		if (nextProps.notesLoading === -1 && nextProps.user !== null) {
-			this.props.getNotes();
+			this.props.getNotes();			
 		}
 	}
 
@@ -47,5 +53,5 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-	connect(mapStateToProps, { getUser, getNotes })(Loading)
+	connect(mapStateToProps, { getUser, getNotes, getCategories })(Loading)
 );
