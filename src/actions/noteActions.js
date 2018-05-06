@@ -34,23 +34,26 @@ export function getNotes() {
 	};
 }
 
-export function saveNote(note, category, exists) {
+export function saveNote(note, category) {
 	return dispatch => {
-		let newNote = note;
+		// If no new category is created, save note as it is passed into function
+		let noteToSave = note;
 
-		if (category && !exists) {
+		// New Category creation: Category returns an object ({ name: category })
+		if (typeof category === 'object') {
 			categoryDb.push(category).on('value', snapshot => {
 				let categories = [...note.categories, snapshot.key];
-				newNote = { ...note, categories };
+				noteToSave = { ...note, categories };
 			});
-		} else if (exists) {
+			// Category already exists: Category returns found category key
+		} else if (!!category) {
 			categoryDb.child(category).on('value', snapshot => {
 				let categories = [...new Set([...note.categories, snapshot.key])];
-				newNote = { ...note, categories };
+				noteToSave = { ...note, categories };
 			});
 		}
 
-		noteDb.push(newNote);
+		noteDb.push(noteToSave);
 	};
 }
 
