@@ -34,9 +34,23 @@ export function getNotes() {
 	};
 }
 
-export function saveNote(note) {
+export function saveNote(note, category, exists) {
 	return dispatch => {
-		noteDb.push(note);
+		let newNote = note;
+
+		if (category && !exists) {
+			categoryDb.push(category).on('value', snapshot => {
+				let categories = [...note.categories, snapshot.key];
+				newNote = { ...note, categories };
+			});
+		} else if (exists) {
+			categoryDb.child(category).on('value', snapshot => {
+				let categories = [...new Set([...note.categories, snapshot.key])];
+				newNote = { ...note, categories };
+			});
+		}
+
+		noteDb.push(newNote);
 	};
 }
 
