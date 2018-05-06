@@ -4,14 +4,27 @@ import NoteCard from '../NoteCard/NoteCard';
 import _ from 'lodash';
 import NoteForm from '../NoteForm/NoteForm';
 import { connect } from 'react-redux';
-import { getNotes, saveNote, deleteNote } from '../../actions/noteActions';
+import {
+	getNotes,
+	saveNote,
+	deleteNote,
+	updateNote
+} from '../../actions/noteActions';
+import {
+	getCategories,
+	saveCategory,
+	deleteCategory
+} from '../../actions/categoryActions';
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			title: '',
-			body: ''
+			body: '',
+			category: '',
+			categories: [],
+			checked: false
 		};
 
 		// bind
@@ -25,24 +38,59 @@ class App extends Component {
 	}
 
 	handleChange(e) {
-		this.setState({
-			[e.target.name]: e.target.value
-		});
+		if (e.target.name === 'categories') {
+			if (!this.state.categories.includes(e.target.id)) {
+				this.setState({
+					categories: [...this.state.categories, e.target.id]
+				});
+			} else {
+				this.setState({
+					categories: this.state.categories.filter(cat => cat !== e.target.id)
+				});
+			}
+		} else {
+			this.setState({
+				[e.target.name]: e.target.value
+			});
+		}
 	}
 
 	handleSubmit(e) {
 		e.preventDefault();
-		const note = {
-			title: this.state.title,
-			body: this.state.body,
-			votes: 0,
-			uid: this.props.user.uid
-		};
-		this.props.saveNote(note);
-		this.setState({
-			title: '',
-			body: ''
-		});
+		const { title, body, categories, category } = this.state;
+		const { user, saveCategory, saveNote, addCategoryToNote } = this.props;
+
+		if (title) {
+			const note = {
+				title: title,
+				body: body,
+				votes: 0,
+				uid: user.uid,
+				categories: categories
+			};
+
+			let categoryId = false
+			for (let key in this.props.categories) {
+				if (this.props.categories[key].name === category) {
+					categoryId = key
+				}
+			}
+
+			if (categoryId) {
+				saveNote(note, categoryId)
+			} else if (category) {
+				saveNote(note, { name: category })
+			} else {
+				saveNote(note)
+			}
+
+			this.setState({
+				title: '',
+				body: '',
+				category: '',
+				categories: []
+			});
+		}
 	}
 
 	sortProperties(obj) {
@@ -57,14 +105,16 @@ class App extends Component {
 	}
 
 	renderNotes() {
-		return _.map(this.sortProperties(this.props.notes), (note, id) => {
+		const { notes, deleteNote, categories, user } = this.props;
+		return _.map(this.sortProperties(notes), (note, id) => {
 			return (
 				<NoteCard
 					key={note[0]}
 					id={note[0]}
 					note={note[1]}
-					deleteNote={this.props.deleteNote}
-					user={this.props.user}
+					deleteNote={deleteNote}
+					user={user}
+					categories={categories}
 				/>
 			);
 		});
@@ -77,6 +127,7 @@ class App extends Component {
 					handleChange={this.handleChange}
 					handleSubmit={this.handleSubmit}
 					state={this.state}
+					categories={this.sortProperties(this.props.categories)}
 				/>
 				{this.renderNotes()}
 			</div>
@@ -87,10 +138,17 @@ class App extends Component {
 function mapStateToProps(state) {
 	return {
 		notes: state.notes,
-		user: state.user
+		user: state.user,
+		categories: state.categories
 	};
 }
 
-export default connect(mapStateToProps, { getNotes, saveNote, deleteNote })(
-	App
-);
+export default connect(mapStateToProps, {
+	getNotes,
+	saveNote,
+	deleteNote,
+	saveCategory,
+	getCategories,
+	deleteCategory,
+	updateNote
+})(App);
