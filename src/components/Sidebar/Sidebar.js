@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from './Sidebar.scss';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faTimes from '@fortawesome/fontawesome-free-solid/faTimes';
 
 const Sidebar = ({
 	categories,
@@ -22,7 +24,7 @@ const Sidebar = ({
 						{cat[1].name}
 					</div>
 					<div className={styles.gridCell} onClick={handleDelete} id={cat[0]}>
-						x
+						<FontAwesomeIcon icon={faTimes} />
 					</div>
 				</div>
 			</span>

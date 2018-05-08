@@ -3,6 +3,7 @@ import styles from './App.scss';
 import NoteCard from '../NoteCard/NoteCard';
 import _ from 'lodash';
 import NoteForm from '../NoteForm/NoteForm';
+import Sidebar from '../Sidebar/Sidebar';
 import { connect } from 'react-redux';
 import {
 	getNotes,
@@ -10,11 +11,7 @@ import {
 	deleteNote,
 	updateNote
 } from '../../actions/noteActions';
-import {
-	getCategories,
-	saveCategory,
-	deleteCategory
-} from '../../actions/categoryActions';
+import { getCategories, deleteCategory } from '../../actions/categoryActions';
 
 class App extends Component {
 	constructor(props) {
@@ -22,15 +19,18 @@ class App extends Component {
 		this.state = {
 			title: '',
 			body: '',
-			category: '',
+			category: 'Uncategorized',
 			categories: [],
-			checked: false
+			checked: false,
+			categoryFilter: 'all'
 		};
 
 		// bind
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.renderNotes = this.renderNotes.bind(this);
+		this.handleCategoryChange = this.handleCategoryChange.bind(this);
+		this.handleCategoryDelete = this.handleCategoryDelete.bind(this);
 	}
 
 	componentDidMount() {
@@ -58,7 +58,7 @@ class App extends Component {
 	handleSubmit(e) {
 		e.preventDefault();
 		const { title, body, categories, category } = this.state;
-		const { user, saveCategory, saveNote, addCategoryToNote } = this.props;
+		const { user, saveNote } = this.props;
 
 		if (title) {
 			const note = {
@@ -69,28 +69,38 @@ class App extends Component {
 				categories: categories
 			};
 
-			let categoryId = false
+			let categoryId = false;
 			for (let key in this.props.categories) {
 				if (this.props.categories[key].name === category) {
-					categoryId = key
+					categoryId = key;
 				}
 			}
 
 			if (categoryId) {
-				saveNote(note, categoryId)
+				saveNote(note, categoryId);
 			} else if (category) {
-				saveNote(note, { name: category })
+				saveNote(note, { name: category });
 			} else {
-				saveNote(note)
+				saveNote(note);
 			}
 
 			this.setState({
 				title: '',
 				body: '',
-				category: '',
+				category: 'Uncategorized',
 				categories: []
 			});
 		}
+	}
+
+	handleCategoryChange(e) {
+		this.setState({
+			categoryFilter: e.target.id
+		});
+	}
+
+	handleCategoryDelete(e) {
+		this.props.deleteCategory(e.target.id);
 	}
 
 	sortProperties(obj) {
@@ -106,7 +116,17 @@ class App extends Component {
 
 	renderNotes() {
 		const { notes, deleteNote, categories, user } = this.props;
-		return _.map(this.sortProperties(notes), (note, id) => {
+
+		let filteredNotes = notes;
+		if (this.state.categoryFilter === 'all') {
+			filteredNotes = this.sortProperties(notes);
+		} else {
+			filteredNotes = this.sortProperties(notes).filter(note =>
+				note[1].categories.includes(this.state.categoryFilter)
+			);
+		}
+
+		return _.map(filteredNotes, (note, id) => {
 			return (
 				<NoteCard
 					key={note[0]}
@@ -122,14 +142,28 @@ class App extends Component {
 
 	render() {
 		return (
-			<div className={styles.container}>
-				<NoteForm
-					handleChange={this.handleChange}
-					handleSubmit={this.handleSubmit}
-					state={this.state}
-					categories={this.sortProperties(this.props.categories)}
-				/>
-				{this.renderNotes()}
+			<div>
+				<div className={styles.wrapper}>
+					<Sidebar
+						categories={this.sortProperties(this.props.categories)}
+						handleClick={this.handleCategoryChange}
+						handleDelete={this.handleCategoryDelete}
+						selectedCategory={this.state.categoryFilter}
+					/>
+					<main className={styles.content}>
+						<div className={styles.feedGrid}>
+							<div className={[styles.cardHalf, styles.wide].join(' ')}>
+								<NoteForm
+									handleChange={this.handleChange}
+									handleSubmit={this.handleSubmit}
+									state={this.state}
+									categories={this.sortProperties(this.props.categories)}
+								/>
+							</div>
+							{this.renderNotes()}
+						</div>
+					</main>
+				</div>
 			</div>
 		);
 	}
@@ -147,7 +181,6 @@ export default connect(mapStateToProps, {
 	getNotes,
 	saveNote,
 	deleteNote,
-	saveCategory,
 	getCategories,
 	deleteCategory,
 	updateNote
