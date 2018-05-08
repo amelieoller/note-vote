@@ -2,6 +2,10 @@ import React, { Component } from 'react';
 import styles from './Vote.scss';
 import { connect } from 'react-redux';
 import { updateNote } from '../../actions/noteActions';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faCopy from '@fortawesome/fontawesome-free-solid/faCopy';
+import faThumbsUp from '@fortawesome/fontawesome-free-solid/faThumbsUp';
+import faThumbsDown from '@fortawesome/fontawesome-free-solid/faThumbsDown';
 
 class Vote extends Component {
 	constructor(props) {
@@ -14,9 +18,9 @@ class Vote extends Component {
 
 	handleClick(e) {
 		let newVote = this.state.votes;
-		e.target.name === 'plus' ? newVote++ : newVote--;
+		e.currentTarget.name === 'plus' ? newVote++ : newVote--;
 
-		this.props.updateNote(this.props.id, {votes: newVote});
+		this.props.updateNote(this.props.id, { votes: newVote });
 
 		this.setState({
 			votes: newVote
@@ -25,21 +29,17 @@ class Vote extends Component {
 
 	render() {
 		return (
-			<div>
-				<button
-					className={styles.plusMinus}
-					name="plus"
-					onClick={e => this.handleClick(e)}
-				>
-					+
+			<div className={styles.center}>
+				<button title="UpVote" name="plus" onClick={e => this.handleClick(e)}>
+					<FontAwesomeIcon icon={faThumbsUp} />
 				</button>
-				{this.state.votes}
+				<span className={styles.vote}>{this.state.votes}</span>
 				<button
-					className={styles.plusMinus}
+					title="DownVote"
 					name="minus"
 					onClick={e => this.handleClick(e)}
 				>
-					-
+					<FontAwesomeIcon icon={faThumbsDown} />
 				</button>
 			</div>
 		);

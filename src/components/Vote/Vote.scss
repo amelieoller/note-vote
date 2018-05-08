@@ -1,3 +1,11 @@
-.plusMinus {
-	padding: 5px 10px;
+@import '../../shared/colors.scss';
+
+.center {
+	align-self: center;
+}
+
+.vote {
+	font-weight: 800;
+	font-size: 17px;
+	color: $red;
 }
