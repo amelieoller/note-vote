@@ -1,0 +1,40 @@
+@import '../../shared/colors.scss';
+@import '../../shared/mixins.scss';
+
+.sidebar {
+	min-width: 125px;
+	background-color: $dark;
+	padding: 35px 5px;
+}
+
+.grid {
+	display: flex;
+	flex-flow: row;
+	flex-wrap: wrap;
+	padding: 2px;
+}
+
+.gridCell {
+	flex: 1;
+	cursor: pointer;
+	@include transition(color, 200ms);
+	&:hover {
+		color: $white;
+	}
+}
+
+$gutter: 1em;
+.gridGutters {
+	margin-left: -$gutter;
+	.gridCell {
+		padding-left: $gutter;
+	}
+}
+
+.grid1of6 > .gridCell:last-of-type {
+	flex: 0 0 16.6666%;
+}
+
+.active {
+	color: $white;
+}
