@@ -8,35 +8,38 @@ import { withRouter } from 'react-router-dom';
 class Navigation extends Component {
 	render() {
 		return (
-			<div className={styles.nav}>
-				<ul>
-					{this.props.user === null ? (
-						<li>
-							<NavLink exact to="/login" activeClassName={styles.active}>
-								Login
-							</NavLink>
-						</li>
-					) : (
-						<span>
-							<li>
-								<NavLink exact to="/" activeClassName={styles.active}>
-									Home
+			<header>
+				<nav className={styles.navigation}>
+					<div className={styles.logotype}>NoteVote</div>
+					<ul className={styles.categories}>
+						{this.props.user === null ? (
+							<li className={styles.categoryItem}>
+								<NavLink exact to="/login" activeClassName={styles.active}>
+									Login
 								</NavLink>
 							</li>
-							<li>
-								<NavLink
-									exact
-									to="/login"
-									activeClassName={styles.active}
-									onClick={() => this.props.logout()}
-								>
-									Logout
-								</NavLink>
-							</li>
-						</span>
-					)}
-				</ul>
-			</div>
+						) : (
+							<span>
+								<li className={styles.categoryItem}>
+									<NavLink exact to="/" activeClassName={styles.active}>
+										Home
+									</NavLink>
+								</li>
+								<li className={styles.categoryItem}>
+									<NavLink
+										exact
+										to="/login"
+										activeClassName={styles.active}
+										onClick={() => this.props.logout()}
+									>
+										Logout
+									</NavLink>
+								</li>
+							</span>
+						)}
+					</ul>
+				</nav>
+			</header>
 		);
 	}
 }
