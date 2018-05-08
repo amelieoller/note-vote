@@ -33,7 +33,16 @@ class NoteDetail extends Component {
 	};
 
 	render() {
-		const { note } = this.props;
+		const { note, categories } = this.props;
+		let newCategories = [];
+		note.categories.map(cat => {
+			for (let key in categories) {
+				if (key === cat) {
+					newCategories.push(categories[key]);
+				}
+			}
+		});
+
 		return (
 			<div>
 				<Link to="/">Back</Link>
@@ -55,6 +64,9 @@ class NoteDetail extends Component {
 						<button onClick={this.handleClick} type="submit">
 							Change Note
 						</button>
+						<ul>
+							<li>{newCategories.map(categ => categ.name)}</li>
+						</ul>
 					</form>
 				)}
 			</div>
@@ -66,7 +78,8 @@ function mapStateToProps(state, ownProps) {
 	return {
 		note: state.notes[ownProps.match.params.id],
 		noteId: ownProps.match.params.id,
-		uid: state.user.uid
+		uid: state.user.uid,
+		categories: state.categories
 	};
 }
 
