@@ -1,18 +1,56 @@
 @import '../../shared/colors.scss';
 @import '../../shared/mixins.scss';
 
-.container {
-   background-color: $dark;
-   color: $white;
-   margin: 15px 0;
-   padding: 15px;
-   overflow: hidden;
-}
+.card {
+	position: relative;
+	width: 100%;
+	margin: 7px;
+	padding: 10px 15px;
+	background-color: $white;
+	box-shadow: 0px 0px 10px 0px rgba(110, 123, 140, 0.3);
 
-.text {
-   float: left;
-}
+	&:nth-child(5) {
+		flex: 545px;
+	}
 
-.buttons {
-   float: right;
+	& h3 {
+		font-size: 18px;
+	}
+
+	& button {
+		margin: 0 5px;
+		padding: 5px 15px;
+	}
+
+	& a {
+		color: $blue;
+		&:hover {
+			color: $dark;
+		}
+	}
+
+	& pre {
+		margin: 0;
+	}
+
+	& .container {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	& .itemLarge {
+		flex: 1;
+	}
+
+	& .item {
+		// flex: 1;
+	}
+
+	& .center {
+		align-self: center;
+	}
+
+	& .red {
+		background-color: $red;
+	}
 }
