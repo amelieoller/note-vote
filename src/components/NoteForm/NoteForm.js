@@ -4,8 +4,7 @@ import _ from 'lodash';
 
 const NoteForm = ({ handleChange, handleSubmit, state, categories }) => {
 	return (
-		<div className={styles.container}>
-			<h2>Create a New Note:</h2>
+		<div className={styles.formContainer}>
 			<form onSubmit={handleSubmit}>
 				<input
 					className={styles.fullWidth}
@@ -33,18 +32,31 @@ const NoteForm = ({ handleChange, handleSubmit, state, categories }) => {
 					placeholder="Category"
 					onChange={handleChange}
 				/>
-				<h3>Categories</h3>
-
-				{_.map(categories, (category, id) => {
-					return (
-						<div key={category[0]}>
-							<input type="checkbox" name="categories" id={category[0]} onChange={handleChange} checked={state.categories.includes(category[0])}/>
-							<label  htmlFor={category[0]}>{category[1].name} </label>
-						</div>
-					);
-				})}
-
+				<div className={styles.categoryContainer}>
+					{_.map(categories, (category, id) => {
+						return (
+							<div key={category[0]} className={styles.coloured}>
+								<div className={styles.checkbox}>
+									<label>
+										<input
+											type="checkbox"
+											name="categories"
+											id={category[0]}
+											onChange={handleChange}
+											checked={state.categories.includes(category[0])}
+										/>
+										<span className={styles.checkboxMaterial}>
+											<span className={styles.check} />
+										</span>{' '}
+										{category[1].name}
+									</label>
+								</div>
+							</div>
+						);
+					})}
+				</div>
 				<br />
+
 				<input type="submit" />
 			</form>
 		</div>
