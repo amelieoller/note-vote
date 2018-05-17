@@ -1,7 +1,8 @@
 import {
 	NOTES_STATUS,
 	USER_STATUS,
-	CATEGORIES_STATUS
+	CATEGORIES_STATUS,
+	TAGS_STATUS
 } from '../actions/actionTypes';
 
 export default function(state = {}, action) {
@@ -12,6 +13,8 @@ export default function(state = {}, action) {
 			return { ...state, user: action.payload };
 		case CATEGORIES_STATUS:
 			return { ...state, categories: action.payload };
+		case TAGS_STATUS:
+			return { ...state, tags: action.payload };
 		default:
 			return state;
 	}
