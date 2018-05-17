@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { NavLink } from 'react-router-dom';
 import styles from './Navigation.scss';
-import { logout } from '../../actions/userActions';
+import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+
+// Actions
+import { logout } from '../../actions/userActions';
 
 class Navigation extends Component {
 	render() {
 		return (
-			<header>
 				<nav className={styles.navigation}>
-					<div className={styles.logotype}>NoteVote</div>
 					<ul className={styles.categories}>
 						{this.props.user === null ? (
 							<li className={styles.categoryItem}>
@@ -39,7 +39,6 @@ class Navigation extends Component {
 						)}
 					</ul>
 				</nav>
-			</header>
 		);
 	}
 }
