@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
+import styles from './Login.scss';
 import { connect } from 'react-redux';
+
+// Components
+import Errors from '../Errors/Errors';
+
+// Actions
 import {
 	googleLogin,
 	passwordSignUp,
@@ -7,8 +13,6 @@ import {
 	getUser,
 	sendPasswordResetEmail
 } from '../../actions/userActions';
-import styles from './Login.scss';
-import Errors from '../Errors/Errors';
 
 class Login extends Component {
 	constructor(props) {
@@ -20,11 +24,6 @@ class Login extends Component {
 			signin: true,
 			signup: false
 		};
-
-		this.handleChange = this.handleChange.bind(this);
-		this.handleSignIn = this.handleSignIn.bind(this);
-		this.handleSignUp = this.handleSignUp.bind(this);
-		this.handleForgotPassword = this.handleForgotPassword.bind(this);
 	}
 
 	componentDidMount() {
@@ -45,29 +44,29 @@ class Login extends Component {
 		}
 	}
 
-	handleChange(e) {
+	handleChange = e => {
 		this.setState({
-			[e.target.name]: e.target.value
+			[e.currentTarget.name]: e.currentTarget.value
 		});
-	}
+	};
 
-	handleSignIn(e) {
+	handleSignIn = e => {
 		e.preventDefault();
 		this.props.passwordSignIn(this.state.email, this.state.password);
-	}
+	};
 
-	handleSignUp(e) {
+	handleSignUp = e => {
 		e.preventDefault();
 		this.props.passwordSignUp(this.state.email, this.state.password);
-	}
+	};
 
-	handleForgotPassword(e) {
+	handleForgotPassword = e => {
 		e.preventDefault();
 		this.props.sendPasswordResetEmail(this.state.email);
-	}
+	};
 
 	toggleClass(e) {
-		if (!this.state[e.target.name]) {
+		if (!this.state[e.currentTarget.name]) {
 			this.setState({
 				signin: !this.state.signin,
 				signup: !this.state.signup
@@ -114,8 +113,8 @@ class Login extends Component {
 							className={(styles.fadeIn, styles.second)}
 							name="email"
 							placeholder="Email"
-							onFocus={e => (e.target.placeholder = '')}
-							onBlur={e => (e.target.placeholder = 'Email')}
+							onFocus={e => (e.currentTarget.placeholder = '')}
+							onBlur={e => (e.currentTarget.placeholder = 'Email')}
 							onChange={this.handleChange}
 						/>
 						<input
@@ -124,8 +123,8 @@ class Login extends Component {
 							className={(styles.fadeIn, styles.third)}
 							name="password"
 							placeholder="Password"
-							onFocus={e => (e.target.placeholder = '')}
-							onBlur={e => (e.target.placeholder = 'Password')}
+							onFocus={e => (e.currentTarget.placeholder = '')}
+							onBlur={e => (e.currentTarget.placeholder = 'Password')}
 							onChange={this.handleChange}
 						/>
 						{this.state.signin ? (
