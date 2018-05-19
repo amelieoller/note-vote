@@ -110,7 +110,7 @@ class Login extends Component {
 						<input
 							type="text"
 							id={styles.login}
-							className={(styles.fadeIn, styles.second)}
+							className={(styles.fadeIn, styles.second, styles.inputField)}
 							name="email"
 							placeholder="Email"
 							onFocus={e => (e.currentTarget.placeholder = '')}
@@ -120,7 +120,7 @@ class Login extends Component {
 						<input
 							type="password"
 							id={styles.password}
-							className={(styles.fadeIn, styles.third)}
+							className={(styles.fadeIn, styles.third, styles.inputField)}
 							name="password"
 							placeholder="Password"
 							onFocus={e => (e.currentTarget.placeholder = '')}
