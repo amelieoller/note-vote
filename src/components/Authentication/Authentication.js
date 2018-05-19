@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// Get access to history object property with withRouter
 import { withRouter } from 'react-router-dom';
 
 class Authenticating extends Component {

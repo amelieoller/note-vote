@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+
+// Actions
 import { updateNote } from '../../actions/noteActions';
 
 class NoteDetail extends Component {
@@ -17,7 +19,7 @@ class NoteDetail extends Component {
 
 	handleChange = e => {
 		this.setState({
-			[e.target.name]: e.target.value
+			[e.currentTarget.name]: e.currentTarget.value
 		});
 	};
 
@@ -65,7 +67,7 @@ class NoteDetail extends Component {
 							Change Note
 						</button>
 						<ul>
-							<li>{newCategories.map(categ => categ.name)}</li>
+							<li>{newCategories.map(category => category.name)}</li>
 						</ul>
 					</form>
 				)}
