@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import styles from './Loading.scss';
 import { connect } from 'react-redux';
-// Get access to history object property with withRouter
 import { withRouter } from 'react-router-dom';
+
+// Actions
 import { getUser } from '../../actions/userActions';
 import { getNotes } from '../../actions/noteActions';
 import { getCategories } from '../../actions/categoryActions';
@@ -29,7 +31,7 @@ class Loading extends Component {
 	componentWillReceiveProps(nextProps) {
 		// Wait for the user to get authenticated and then load the notes
 		if (nextProps.notesLoading === -1 && nextProps.user !== null) {
-			this.props.getNotes();			
+			this.props.getNotes();
 		}
 	}
 
@@ -39,7 +41,11 @@ class Loading extends Component {
 		if ((!userLoading && !notesLoading) || this.props.user === null) {
 			return <div>{children}</div>;
 		} else {
-			return <div>Loading...</div>;
+			return (
+				<div className={styles.loadingContainer}>
+					<div className={styles.circle} />
+				</div>
+			);
 		}
 	}
 }
