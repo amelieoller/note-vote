@@ -1,5 +1,10 @@
-import { GET_NOTES, NOTES_STATUS } from './actionTypes';
-import { noteDb, categoryDb } from '../firebase';
+import {
+	GET_NOTES,
+	NOTES_STATUS,
+	DELETE_NOTE,
+	UPDATE_NOTE
+} from './actionTypes';
+import { noteDb, categoryDb, tagDb } from '../firebase';
 
 export function getNotes() {
 	return dispatch => {
@@ -34,13 +39,13 @@ export function getNotes() {
 	};
 }
 
-export function saveNote(note, category) {
+export function saveNote(note, category, tag) {
 	return dispatch => {
 		// If no new category is created, save note as it is passed into function
 		let noteToSave = note;
 
 		// New Category creation: Category returns an object ({ name: category })
-		if (typeof category === 'object') {
+		if (typeof category === 'object' && category !== null) {
 			categoryDb.push(category).on('value', snapshot => {
 				let categories = [...note.categories, snapshot.key];
 				noteToSave = { ...note, categories };
@@ -53,14 +58,42 @@ export function saveNote(note, category) {
 			});
 		}
 
+		if (typeof tag === 'object' && tag !== null) {
+			tagDb.push(tag).on('value', snapshot => {
+				let tags = [...note.tags, snapshot.key];
+				noteToSave = { ...note, tags };
+			});
+			// tag already exists: tag returns found tag key
+		} else if (!!tag) {
+			tagDb.child(tag).on('value', snapshot => {
+				let tags = [...new Set([...note.tags, snapshot.key])];
+				noteToSave = { ...note, tags };
+			});
+		}
+
 		noteDb.push(noteToSave);
 	};
 }
 
 export function deleteNote(id) {
-	return dispatch => noteDb.child(id).remove();
+	return dispatch => {
+		noteDb.child(id).remove();
+		// .then(() => {
+		dispatch({
+			type: DELETE_NOTE,
+			payload: id
+		});
+		// });
+	};
 }
 
 export function updateNote(id, note) {
-	return dispatch => noteDb.child(id).update(note);
+	return dispatch => {
+		noteDb.child(id).update(note);
+
+		dispatch({
+			type: UPDATE_NOTE,
+			payload: { id, note }
+		});
+	};
 }
