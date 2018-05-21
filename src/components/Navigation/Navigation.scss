@@ -1,4 +1,5 @@
 @import '../../shared/colors.scss';
+@import '../../shared/mixins.scss';
 
 nav {
 	grid-column: span 10;
@@ -7,16 +8,25 @@ nav {
 .navigation {
 	display: flex;
 	align-items: center;
+	padding: 0 10px;
+	box-shadow: 0px 0px 10px 0px rgba(110, 123, 140, 0.3);
+
 	ul {
 		list-style: none;
 		text-align: center;
 		padding: 0;
 		margin: 0;
+		display: flex;
+	}
+
+	.searchInput {
+		margin-left: auto;
 	}
 
 	li {
 		font-size: 1.2em;
 		text-transform: uppercase;
+		margin: 0 10px;
 	}
 
 	a {
@@ -35,21 +45,30 @@ nav {
 	}
 }
 
-.categories {
-	display: flex;
-	margin-left: 45px;
+.hideForm {
+	@include transition(background, 400ms);
 }
 
-.categoryItem {
-	margin: 0 10px;
+.search {
+	background-color: $red !important;
 }
 
 @media screen and (min-width: 500px) {
 	.navigation li {
-		width: 80px;
 		border-bottom: none;
-		height: 50px;
-		line-height: 50px;
+		// line-height: 50px;
 		display: inline-block;
 	}
+}
+
+.addNoteText {
+	font-size: 10px;
+	text-transform: none;
+	display: block;
+	line-height: 10px;
+}
+
+.addNoteButton {
+	display: block;
+	line-height: 10px;
 }
