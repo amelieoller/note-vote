@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
 import styles from './NoteCard.scss';
-import Vote from '../Vote/Vote';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Highlighter from '../Highlighter/Highlighter';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faCopy from '@fortawesome/fontawesome-free-solid/faCopy';
-import faThumbsUp from '@fortawesome/fontawesome-free-solid/faThumbsUp';
-import faThumbsDown from '@fortawesome/fontawesome-free-solid/faThumbsDown';
 import faTrashAlt from '@fortawesome/fontawesome-free-solid/faTrashAlt';
+
+// Components
+import Vote from '../Vote/Vote';
+import Highlighter from '../Highlighter/Highlighter';
+
+// Actions
+import { updateNote } from '../../actions/noteActions';
 
 class NoteCard extends Component {
 	constructor(props) {
@@ -18,50 +22,67 @@ class NoteCard extends Component {
 			value: this.props.note.body,
 			copied: false
 		};
-
-		this.renderCategories = this.renderCategories.bind(this);
 	}
 
-	renderCategories() {
+	renderCategories = () => {
 		const { note, categories } = this.props;
-		if (categories && Object.keys(categories).length !== 0) {
+		if (note.categories && Object.keys(categories).length !== 0) {
 			return note.categories.map(cat => {
 				if (categories.hasOwnProperty(cat)) {
-					return <span key={cat}>{categories[cat].name} | </span>;
+					return (
+						<span className={styles.category} key={cat}>
+							{categories[cat].name}
+						</span>
+					);
 				}
 			});
 		}
+	};
+
+	renderTags = () => {
+		const { note, tags } = this.props;
+		if (note.tags && Object.keys(tags).length !== 0) {
+			return note.tags.map(tag => {
+				if (tags.hasOwnProperty(tag)) {
+					return (
+						<span className={styles.tag} key={tag}>
+							{tags[tag].name}
+						</span>
+					);
+				}
+			});
+		}
+	};
+
+	onCopy() {
+		let newVote = this.props.note.votes;
+		newVote++;
+		this.props.updateNote(this.props.id, { votes: newVote });
+
+		this.setState({
+			copied: true
+		});
+
+		setTimeout(() => {
+			this.setState({ copied: false });
+		}, 2000);
 	}
 
 	render() {
-		const { id, note, deleteNote, user } = this.props;
+		const { id, note, handleDeleteNote } = this.props;
 
 		return (
 			<div className={styles.card}>
-				<div className={styles.container}>
-					<div className={styles.itemLarge}>
+				<div className={styles.navContainer}>
+					<div className={styles.noteTitle}>
 						<Link to={`/${id}`}>
 							<h3>{note.title}</h3>
 						</Link>
 					</div>
-					<div className={styles.center}>
-						{note.uid === user.uid && (
-							<button title="Delete" onClick={() => deleteNote(id)}>
-								<FontAwesomeIcon icon={faTrashAlt} />
-							</button>
-						)}
-					</div>
-					<Vote note={note} id={id} />
-				</div>
-
-				<div className={styles.container}>
-					<div className={styles.itemLarge}>
-						<Highlighter codeString={note.body} />
-					</div>
-					<div className={styles.item}>
+					<div>
 						<CopyToClipboard
 							text={this.state.value}
-							onCopy={() => this.setState({ copied: true })}
+							onCopy={() => this.onCopy()}
 						>
 							<button
 								title="Copy"
@@ -71,15 +92,33 @@ class NoteCard extends Component {
 							</button>
 						</CopyToClipboard>
 					</div>
-					<br />
+
+					<Vote note={note} id={id} />
+					<div>
+						<button
+							className={styles.delete}
+							title="Delete"
+							onClick={() => handleDeleteNote(id)}
+						>
+							<FontAwesomeIcon icon={faTrashAlt} />
+						</button>
+					</div>
 				</div>
-				<div className={styles.container}>
+				<div>
+					<Highlighter codeString={note.body} />
+				</div>
+				<div className={styles.categories}>
 					Categories:{' '}
-					<div className={styles.itemLarge}> {this.renderCategories()}</div>
+					<span>
+						{this.renderCategories() ? this.renderCategories() : 'None'}
+					</span>
+				</div>
+				<div className={styles.categories}>
+					Tags: <span>{this.renderTags() ? this.renderTags() : 'None'}</span>
 				</div>
 			</div>
 		);
 	}
 }
 
-export default NoteCard;
+export default connect(null, { updateNote })(NoteCard);
