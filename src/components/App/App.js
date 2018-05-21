@@ -1,17 +1,56 @@
 import React, { Component } from 'react';
 import styles from './App.scss';
-import NoteCard from '../NoteCard/NoteCard';
-import _ from 'lodash';
-import NoteForm from '../NoteForm/NoteForm';
-import Sidebar from '../Sidebar/Sidebar';
+import _map from 'lodash/map';
 import { connect } from 'react-redux';
+import { createFilter } from 'react-search-input';
+
+// Components
+import NoteCard from '../NoteCard/NoteCard';
+import NotePage from '../NotePage/NotePage';
+import Navigation from '../Navigation/Navigation';
+import Sidebar from '../Sidebar/Sidebar';
+
+// Actions
+import { getNotes, saveNote, deleteNote } from '../../actions/noteActions';
+import { setVisibilityFilter } from '../../actions/visibilityFilterActions';
 import {
-	getNotes,
-	saveNote,
-	deleteNote,
-	updateNote
-} from '../../actions/noteActions';
-import { getCategories, deleteCategory } from '../../actions/categoryActions';
+	getCategories,
+	deleteCategory,
+	saveCategory
+} from '../../actions/categoryActions';
+import { getTags, deleteTag, saveTag } from '../../actions/tagActions';
+
+const getVisibleNotes = (notes, visibilityFilter) => {
+	let filteredNotes = {};
+	let filterCategoriesArray = visibilityFilter.categories;
+	let filterTagsArray = visibilityFilter.tags;
+
+	if (filterTagsArray.length !== 0 || filterCategoriesArray.length !== 0) {
+		Object.keys(notes)
+			.filter(key => {
+				return (
+					notes[key].tags &&
+					filterTagsArray.every(tag => notes[key].tags.includes(tag)) &&
+					notes[key].categories &&
+					filterCategoriesArray.every(cat =>
+						notes[key].categories.includes(cat)
+					)
+				);
+			})
+			.map(selectedKey => {
+				return (filteredNotes = {
+					...filteredNotes,
+					...{ [selectedKey]: notes[selectedKey] }
+				});
+			});
+	} else {
+		filteredNotes = notes;
+	}
+
+	return filteredNotes;
+};
+
+const KEYS_TO_FILTERS = ['title', 'body'];
 
 class App extends Component {
 	constructor(props) {
@@ -19,151 +58,153 @@ class App extends Component {
 		this.state = {
 			title: '',
 			body: '',
-			category: 'Uncategorized',
 			categories: [],
-			checked: false,
-			categoryFilter: 'all'
+			tags: [],
+			searchTerm: '',
+			formHidden: true
 		};
-
-		// bind
-		this.handleChange = this.handleChange.bind(this);
-		this.handleSubmit = this.handleSubmit.bind(this);
-		this.renderNotes = this.renderNotes.bind(this);
-		this.handleCategoryChange = this.handleCategoryChange.bind(this);
-		this.handleCategoryDelete = this.handleCategoryDelete.bind(this);
 	}
 
 	componentDidMount() {
+		this.props.getTags();
 		this.props.getNotes();
+		this.props.getCategories();
 	}
 
-	handleChange(e) {
-		if (e.target.name === 'categories') {
-			if (!this.state.categories.includes(e.target.id)) {
-				this.setState({
-					categories: [...this.state.categories, e.target.id]
-				});
-			} else {
-				this.setState({
-					categories: this.state.categories.filter(cat => cat !== e.target.id)
-				});
-			}
-		} else {
-			this.setState({
-				[e.target.name]: e.target.value
-			});
-		}
-	}
-
-	handleSubmit(e) {
-		e.preventDefault();
-		const { title, body, categories, category } = this.state;
-		const { user, saveNote } = this.props;
-
-		if (title) {
-			const note = {
-				title: title,
-				body: body,
-				votes: 0,
-				uid: user.uid,
-				categories: categories
-			};
-
-			let categoryId = false;
-			for (let key in this.props.categories) {
-				if (this.props.categories[key].name === category) {
-					categoryId = key;
-				}
-			}
-
-			if (categoryId) {
-				saveNote(note, categoryId);
-			} else if (category) {
-				saveNote(note, { name: category });
-			} else {
-				saveNote(note);
-			}
-
-			this.setState({
-				title: '',
-				body: '',
-				category: 'Uncategorized',
-				categories: []
-			});
-		}
-	}
-
-	handleCategoryChange(e) {
-		this.setState({
-			categoryFilter: e.target.id
-		});
-	}
-
-	handleCategoryDelete(e) {
-		this.props.deleteCategory(e.target.id);
-	}
-
-	sortProperties(obj) {
-		var sortable = [];
-		for (var key in obj)
+	sortProperties = obj => {
+		let sortable = [];
+		for (let key in obj)
 			if (obj.hasOwnProperty(key)) sortable.push([key, obj[key]]);
 		sortable.sort(function(a, b) {
 			return b[1].votes - a[1].votes;
 		});
 		// array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
 		return sortable;
-	}
+	};
 
-	renderNotes() {
-		const { notes, deleteNote, categories, user } = this.props;
+	handleDeleteNote = id => {
+		this.props.deleteNote(id);
+	};
 
-		let filteredNotes = notes;
-		if (this.state.categoryFilter === 'all') {
-			filteredNotes = this.sortProperties(notes);
-		} else {
-			filteredNotes = this.sortProperties(notes).filter(note =>
-				note[1].categories.includes(this.state.categoryFilter)
-			);
+	renderNotes = () => {
+		const { categories, user, tags, notes } = this.props;
+		let filteredNotes;
+		let newNotes = {};
+
+		for (let key in notes) {
+			if (notes[key].uid === user.uid) {
+				newNotes = { ...newNotes, [key]: notes[key] };
+			}
 		}
 
-		return _.map(filteredNotes, (note, id) => {
+		if (this.state.searchTerm) {
+			filteredNotes = this.sortProperties(newNotes).filter(
+				createFilter(this.state.searchTerm, KEYS_TO_FILTERS)
+			);
+		} else {
+			filteredNotes = this.sortProperties(newNotes);
+		}
+
+		return _map(filteredNotes, (note, id) => {
 			return (
 				<NoteCard
 					key={note[0]}
 					id={note[0]}
 					note={note[1]}
-					deleteNote={deleteNote}
+					handleDeleteNote={this.handleDeleteNote}
 					user={user}
 					categories={categories}
+					tags={tags}
 				/>
 			);
 		});
-	}
+	};
+
+	handleFilter = e => {
+		let type = e.currentTarget.parentNode.id;
+		let targetId = e.currentTarget.id;
+		let typeArray = this.state[type];
+		let filterArray = this.props.visibilityFilter[type];
+
+		if (targetId === 'all') {
+			this.setState({
+				[type]: []
+			});
+		} else if (filterArray.includes(targetId) && typeArray.includes(targetId)) {
+			let index = typeArray.indexOf(targetId);
+			this.setState({
+				[type]: [...typeArray.slice(0, index), ...typeArray.slice(index + 1)]
+			});
+		} else if (
+			!filterArray.includes(targetId) &&
+			!typeArray.includes(targetId)
+		) {
+			this.setState({
+				[type]: [...this.state[type], targetId]
+			});
+		}
+
+		this.props.setVisibilityFilter(targetId, type);
+	};
+
+	searchUpdated = term => {
+		this.setState({ searchTerm: term });
+	};
+
+	sortProperties = obj => {
+		let sortable = [];
+		for (let key in obj)
+			if (obj.hasOwnProperty(key)) sortable.push([key, obj[key]]);
+		sortable.sort(function(a, b) {
+			return b[1].votes - a[1].votes;
+		});
+		return sortable;
+	};
+
+	handleHideForm = e => {
+		e.preventDefault();
+		this.setState({
+			formHidden: !this.state.formHidden
+		});
+	};
 
 	render() {
 		return (
-			<div>
-				<div className={styles.wrapper}>
-					<Sidebar
-						categories={this.sortProperties(this.props.categories)}
-						handleClick={this.handleCategoryChange}
-						handleDelete={this.handleCategoryDelete}
-						selectedCategory={this.state.categoryFilter}
-					/>
-					<main className={styles.content}>
-						<div className={styles.feedGrid}>
-							<div className={[styles.cardHalf, styles.wide].join(' ')}>
-								<NoteForm
-									handleChange={this.handleChange}
-									handleSubmit={this.handleSubmit}
-									state={this.state}
-									categories={this.sortProperties(this.props.categories)}
-								/>
-							</div>
-							{this.renderNotes()}
-						</div>
-					</main>
-				</div>
+			<div className={styles.container}>
+				<header>
+					<div className={styles.logoType}>NoteVote</div>
+				</header>
+				<Navigation
+					searchUpdated={this.searchUpdated}
+					handleHideForm={this.handleHideForm}
+					formHidden={this.state.formHidden}
+				/>
+				<Sidebar
+					categories={this.sortProperties(this.props.categories)}
+					tags={this.sortProperties(this.props.tags)}
+					handleFilter={this.handleFilter}
+					visibilityFilter={this.props.visibilityFilter}
+					saveTag={this.props.saveTag}
+					deleteTag={this.props.deleteTag}
+					saveCategory={this.props.saveCategory}
+					deleteCategory={this.props.deleteCategory}
+					uid={this.props.user.uid}
+				/>
+				<main>
+					{!this.state.formHidden && (
+						<NotePage
+							handleNoteChange={this.handleNoteChange}
+							handleNoteSubmit={this.handleNoteSubmit}
+							state={this.state}
+							categories={this.sortProperties(this.props.categories)}
+							tags={this.sortProperties(this.props.tags)}
+							user={this.props.user}
+							saveNote={this.props.saveNote}
+						/>
+					)}
+					{this.renderNotes()}
+				</main>
+				<footer />
 			</div>
 		);
 	}
@@ -171,9 +212,11 @@ class App extends Component {
 
 function mapStateToProps(state) {
 	return {
-		notes: state.notes,
+		notes: getVisibleNotes(state.notes, state.visibilityFilter),
 		user: state.user,
-		categories: state.categories
+		categories: state.categories,
+		tags: state.tags,
+		visibilityFilter: state.visibilityFilter
 	};
 }
 
@@ -183,5 +226,9 @@ export default connect(mapStateToProps, {
 	deleteNote,
 	getCategories,
 	deleteCategory,
-	updateNote
+	getTags,
+	deleteTag,
+	saveTag,
+	saveCategory,
+	setVisibilityFilter
 })(App);
