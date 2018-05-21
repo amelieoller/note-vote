@@ -1,19 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './components/App/App';
+import styles from './index.scss';
 import registerServiceWorker from './registerServiceWorker';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import rootReducer from './reducers';
+import ReactDOM from 'react-dom';
 import thunk from 'redux-thunk';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import Navigation from './components/Navigation/Navigation';
+import rootReducer from './reducers';
+
+// Components
+import App from './components/App/App';
 import Login from './components/Login/Login';
-import styles from './index.scss';
 import Loading from './components/Loading/Loading';
 import Authentication from './components/Authentication/Authentication';
-import NoteDetail from './components/NoteDetail/NoteDetail'
+import NoteDetail from './components/NoteDetail/NoteDetail';
 
 const store = createStore(
 	rootReducer,
@@ -24,7 +25,6 @@ ReactDOM.render(
 	<Provider store={store}>
 		<BrowserRouter>
 			<div>
-				<Navigation />
 				<Loading>
 					<Switch>
 						<Route path="/login" component={Login} exact={true} />
