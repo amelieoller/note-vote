@@ -71,38 +71,39 @@ class App extends Component {
 		this.props.getCategories();
 	}
 
-	sortProperties = obj => {
-		let sortable = [];
-		for (let key in obj)
-			if (obj.hasOwnProperty(key)) sortable.push([key, obj[key]]);
-		sortable.sort(function(a, b) {
-			return b[1].votes - a[1].votes;
-		});
-		// array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
-		return sortable;
-	};
-
-	handleDeleteNote = id => {
-		this.props.deleteNote(id);
-	};
-
 	renderNotes = () => {
 		const { categories, user, tags, notes } = this.props;
-		let filteredNotes;
-		let newNotes = {};
+		let userNotes, archivedNotes, filteredNotes;
 
+		// Filter by user
 		for (let key in notes) {
-			if (notes[key].uid === user.uid) {
-				newNotes = { ...newNotes, [key]: notes[key] };
+			if (notes.hasOwnProperty(key) && notes[key].uid === user.uid) {
+				userNotes = { ...userNotes, [key]: notes[key] };
 			}
 		}
 
+		// Filter by archived
+		if (this.props.visibilityFilter.archived) {
+			for (let key in userNotes) {
+				if (userNotes.hasOwnProperty(key) && userNotes[key].archived) {
+					archivedNotes = { ...archivedNotes, [key]: userNotes[key] };
+				}
+			}
+		} else {
+			for (let key in userNotes) {
+				if (userNotes.hasOwnProperty(key) && !userNotes[key].archived) {
+					archivedNotes = { ...archivedNotes, [key]: userNotes[key] };
+				}
+			}
+		}
+
+		// Filter by search term
 		if (this.state.searchTerm) {
-			filteredNotes = this.sortProperties(newNotes).filter(
+			filteredNotes = this.sortProperties(archivedNotes).filter(
 				createFilter(this.state.searchTerm, KEYS_TO_FILTERS)
 			);
 		} else {
-			filteredNotes = this.sortProperties(newNotes);
+			filteredNotes = this.sortProperties(archivedNotes);
 		}
 
 		return _map(filteredNotes, (note, id) => {
@@ -111,10 +112,10 @@ class App extends Component {
 					key={note[0]}
 					id={note[0]}
 					note={note[1]}
-					handleDeleteNote={this.handleDeleteNote}
 					user={user}
 					categories={categories}
 					tags={tags}
+					deleteNote={this.props.deleteNote}
 				/>
 			);
 		});
@@ -126,22 +127,27 @@ class App extends Component {
 		let typeArray = this.state[type];
 		let filterArray = this.props.visibilityFilter[type];
 
-		if (targetId === 'all') {
-			this.setState({
-				[type]: []
-			});
-		} else if (filterArray.includes(targetId) && typeArray.includes(targetId)) {
-			let index = typeArray.indexOf(targetId);
-			this.setState({
-				[type]: [...typeArray.slice(0, index), ...typeArray.slice(index + 1)]
-			});
-		} else if (
-			!filterArray.includes(targetId) &&
-			!typeArray.includes(targetId)
-		) {
-			this.setState({
-				[type]: [...this.state[type], targetId]
-			});
+		switch (true) {
+			case targetId === 'all':
+				this.setState({
+					[type]: []
+				});
+				break;
+			case targetId === 'archived':
+				break;
+			case filterArray.includes(targetId) && typeArray.includes(targetId):
+				let index = typeArray.indexOf(targetId);
+				this.setState({
+					[type]: [...typeArray.slice(0, index), ...typeArray.slice(index + 1)]
+				});
+				break;
+			case !filterArray.includes(targetId) && !typeArray.includes(targetId):
+				this.setState({
+					[type]: [...this.state[type], targetId]
+				});
+				break;
+			default:
+				break;
 		}
 
 		this.props.setVisibilityFilter(targetId, type);
@@ -151,21 +157,22 @@ class App extends Component {
 		this.setState({ searchTerm: term });
 	};
 
-	sortProperties = obj => {
-		let sortable = [];
-		for (let key in obj)
-			if (obj.hasOwnProperty(key)) sortable.push([key, obj[key]]);
-		sortable.sort(function(a, b) {
-			return b[1].votes - a[1].votes;
-		});
-		return sortable;
-	};
-
 	handleHideForm = e => {
 		e.preventDefault();
 		this.setState({
 			formHidden: !this.state.formHidden
 		});
+	};
+
+	sortProperties = obj => {
+		let sortable = [];
+		for (let key in obj)
+			if (obj.hasOwnProperty(key) && obj[key].uid === this.props.user.uid)
+				sortable.push([key, obj[key]]);
+		sortable.sort(function(a, b) {
+			return b[1].votes - a[1].votes;
+		});
+		return sortable;
 	};
 
 	render() {
@@ -193,9 +200,6 @@ class App extends Component {
 				<main>
 					{!this.state.formHidden && (
 						<NotePage
-							handleNoteChange={this.handleNoteChange}
-							handleNoteSubmit={this.handleNoteSubmit}
-							state={this.state}
 							categories={this.sortProperties(this.props.categories)}
 							tags={this.sortProperties(this.props.tags)}
 							user={this.props.user}
@@ -204,7 +208,7 @@ class App extends Component {
 					)}
 					{this.renderNotes()}
 				</main>
-				<footer />
+				<footer>Note Vote &#183; Copyright © {new Date().getFullYear()}</footer>
 			</div>
 		);
 	}
