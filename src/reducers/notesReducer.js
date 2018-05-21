@@ -6,8 +6,7 @@ export default function(state = {}, action) {
 			return action.notes;
 		case UPDATE_NOTE:
 			let id = action.payload.id;
-			let votes = action.payload.note.votes;
-			var newNote = { ...state[id], votes: votes };
+			var newNote = { ...state[id], ...{ ...action.payload.note } };
 			return { ...state, [id]: newNote };
 		default:
 			return state;

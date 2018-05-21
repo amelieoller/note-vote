@@ -1,6 +1,10 @@
 import { SET_VISIBILITY_FILTER } from '../actions/actionTypes';
+import _pickBy from 'lodash/pickBy';
 
-export default function(state = { tags: [], categories: [] }, action) {
+export default function(
+	state = { tags: [], categories: [], archived: false },
+	action
+) {
 	switch (action.type) {
 		case SET_VISIBILITY_FILTER:
 			let type = action.payload.type;
@@ -9,6 +13,8 @@ export default function(state = { tags: [], categories: [] }, action) {
 
 			if (targetId === 'all') {
 				return { ...state, ...{ [type]: [] } };
+			} else if (targetId === 'archived') {
+				return { ...state, ...{ archived: !state.archived } };
 			} else {
 				if (typeArray.includes(targetId)) {
 					let index = typeArray.indexOf(targetId);

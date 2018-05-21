@@ -27,9 +27,10 @@ class Sidebar extends Component {
 
 	handleDelete = e => {
 		const type = e.currentTarget.dataset.name;
-		const saveAction = `delete${type.charAt(0).toUpperCase() + type.slice(1)}`;
-
-		this.props[saveAction](e.currentTarget.id);
+		const deleteAction = `delete${type.charAt(0).toUpperCase() +
+			type.slice(1)}`;
+		var result = window.confirm('Are you sure?');
+		result && this.props[deleteAction](e.currentTarget.id);
 	};
 
 	handleChange = e => {
@@ -176,6 +177,12 @@ class Sidebar extends Component {
 						/>
 					</form>
 				</div>
+				<hr />
+				<span className={visibilityFilter.archived ? styles.active : null}>
+					<div className={styles.gridCell} id="archived" onClick={handleFilter}>
+						Archived Notes
+					</div>
+				</span>
 			</aside>
 		);
 	}

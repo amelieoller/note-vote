@@ -45,7 +45,8 @@ class NotePage extends Component {
 				votes: 0,
 				uid: user.uid,
 				categories: categories,
-				tags: tags
+				tags: tags,
+				archived: false
 			});
 
 			this.setState({
