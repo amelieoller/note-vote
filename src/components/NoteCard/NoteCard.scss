@@ -2,15 +2,28 @@
 @import '../../shared/mixins.scss';
 
 .card {
-	position: relative;
-	width: 100%;
-	margin: 7px;
+	margin: 10px;
 	padding: 10px 15px;
 	background-color: $white;
 	box-shadow: 0px 0px 10px 0px rgba(110, 123, 140, 0.3);
 
-	&:nth-child(5) {
-		flex: 545px;
+	& .delete {
+		background-color: $red;
+	}
+
+	& .navContainer {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+		align-items: center;
+		margin-bottom: 10px;
+	}
+
+	& .noteTitle {
+		margin-right: auto;
+		& h3 {
+			margin: 0;
+		}
 	}
 
 	& h3 {
@@ -20,6 +33,7 @@
 	& button {
 		margin: 0 5px;
 		padding: 5px 15px;
+		@include transition(background, 400ms);
 	}
 
 	& a {
@@ -33,24 +47,16 @@
 		margin: 0;
 	}
 
-	& .container {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	& .itemLarge {
-		flex: 1;
-	}
-
-	& .item {
-		// flex: 1;
-	}
-
-	& .center {
-		align-self: center;
-	}
-
 	& .red {
 		background-color: $red;
+	}
+
+	& .categories {
+		margin-top: 8px;
+	}
+
+	& .category:not(:last-child):after,
+	.tag:not(:last-child):after {
+		content: ' | ';
 	}
 }
