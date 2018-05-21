@@ -7,10 +7,11 @@ import { withRouter } from 'react-router-dom';
 import { getUser } from '../../actions/userActions';
 import { getNotes } from '../../actions/noteActions';
 import { getCategories } from '../../actions/categoryActions';
+import { getTags } from '../../actions/tagActions';
 
 class Loading extends Component {
 	componentWillMount() {
-		const { userLoading, notesLoading } = this.props;
+		const { userLoading, notesLoading, categoriesLoading, tagsLoading } = this.props;
 
 		// If we haven't tried to load the user, load user
 		if (userLoading === undefined) {
@@ -23,8 +24,13 @@ class Loading extends Component {
 		}
 
 		// If we haven't tried to load categories, load categories
-		if (notesLoading === undefined) {
+		if (categoriesLoading === undefined) {
 			this.props.getCategories();
+		}
+
+		// If we haven't tried to load tags, load tags
+		if (tagsLoading === undefined) {
+			this.props.getTags();
 		}
 	}
 
@@ -54,10 +60,12 @@ function mapStateToProps(state) {
 	return {
 		user: state.user,
 		userLoading: state.loading.user,
-		notesLoading: state.loading.notes
+		notesLoading: state.loading.notes,
+		categoriesLoading: state.loading.categories,
+		tagsLoading: state.loading.tags
 	};
 }
 
 export default withRouter(
-	connect(mapStateToProps, { getUser, getNotes, getCategories })(Loading)
+	connect(mapStateToProps, { getUser, getNotes, getCategories, getTags })(Loading)
 );
