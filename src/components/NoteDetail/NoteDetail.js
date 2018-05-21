@@ -2,8 +2,22 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+// Components
+import NoteForm from '../NoteForm/NoteForm';
+
 // Actions
 import { updateNote } from '../../actions/noteActions';
+
+const sortProperties = obj => {
+	let sortable = [];
+	for (let key in obj)
+		if (obj.hasOwnProperty(key)) sortable.push([key, obj[key]]);
+	sortable.sort(function(a, b) {
+		return b[1].votes - a[1].votes;
+	});
+	// array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
+	return sortable;
+};
 
 class NoteDetail extends Component {
 	constructor(props) {
@@ -11,66 +25,66 @@ class NoteDetail extends Component {
 
 		this.state = {
 			title: this.props.note.title || '',
-			body: this.props.note.body || ''
+			body: this.props.note.body || '',
+			tags: this.props.note.tags || [],
+			categories: this.props.note.categories || []
 		};
-
-		this.handleClick = this.handleClick.bind(this);
 	}
 
-	handleChange = e => {
-		this.setState({
-			[e.currentTarget.name]: e.currentTarget.value
-		});
+	handleNoteChange = e => {
+		let items = e.currentTarget.name;
+
+		if (items === 'categories' || items === 'tags') {
+			if (!this.state[items].includes(e.currentTarget.id)) {
+				this.setState({
+					[items]: [...this.state[items], e.currentTarget.id]
+				});
+			} else {
+				this.setState({
+					[items]: this.state[items].filter(item => item !== e.currentTarget.id)
+				});
+			}
+		} else {
+			this.setState({
+				[e.currentTarget.name]: e.currentTarget.value
+			});
+		}
 	};
 
-	handleClick = e => {
+	handleNoteSubmit = e => {
 		e.preventDefault();
-		if (this.state.title && this.state.body) {
-			this.props.updateNote(this.props.noteId, {
-				title: this.state.title,
-				body: this.state.body
-			});
+		const { title, body, categories, tags } = this.state;
+		const { updateNote } = this.props;
+		const noteId = this.props.noteId;
+		let note;
+
+		if (title) {
+			note = {
+				title: title,
+				body: body,
+				categories: categories,
+				tags: tags
+			};
+			updateNote(noteId, note);
 			this.props.history.push('/');
 		}
 	};
 
 	render() {
-		const { note, categories } = this.props;
-		let newCategories = [];
-		note.categories.map(cat => {
-			for (let key in categories) {
-				if (key === cat) {
-					newCategories.push(categories[key]);
-				}
-			}
-		});
+		const { categories, tags } = this.props;
 
 		return (
 			<div>
-				<Link to="/">Back</Link>
-				{/* Fix this to get state after refresh */}
-				{note && (
-					<form>
-						<input
-							onChange={this.handleChange}
-							type="text"
-							value={this.state.title}
-							name="title"
-						/>
-						<textarea
-							onChange={this.handleChange}
-							type="text"
-							value={this.state.body}
-							name="body"
-						/>
-						<button onClick={this.handleClick} type="submit">
-							Change Note
-						</button>
-						<ul>
-							<li>{newCategories.map(category => category.name)}</li>
-						</ul>
-					</form>
-				)}
+				<Link to="/">
+					<button>Back</button>
+				</Link>
+				<NoteForm
+					handleNoteChange={this.handleNoteChange}
+					handleNoteSubmit={this.handleNoteSubmit}
+					state={this.state}
+					categories={categories}
+					tags={tags}
+				/>
 			</div>
 		);
 	}
@@ -81,7 +95,8 @@ function mapStateToProps(state, ownProps) {
 		note: state.notes[ownProps.match.params.id],
 		noteId: ownProps.match.params.id,
 		uid: state.user.uid,
-		categories: state.categories
+		categories: sortProperties(state.categories),
+		tags: sortProperties(state.tags)
 	};
 }
 
