@@ -31,10 +31,13 @@ footer {
 	grid-column: span 12;
 	background-color: $red;
 	color: $white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .searchContainer {
-	overflow: hidden
+	overflow: hidden;
 }
 
 .searchInput {

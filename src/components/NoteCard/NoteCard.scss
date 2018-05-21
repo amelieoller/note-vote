@@ -51,12 +51,12 @@
 		background-color: $red;
 	}
 
-	& .categories {
+	& .types {
 		margin-top: 8px;
+		display: inline-block;
 	}
 
-	& .category:not(:last-child):after,
-	.tag:not(:last-child):after {
+	& .type:not(:last-child):after {
 		content: ' | ';
 	}
 }

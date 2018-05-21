@@ -46,10 +46,13 @@
 		background-color: red;
 		height: 60px;
 	}
+
+	& h3 {
+		margin: 0;
+	}
 }
 
 .fullWidth {
-	// width: 100% !important;
 	grid-column: span 10;
 }
 
