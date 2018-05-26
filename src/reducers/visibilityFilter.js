@@ -1,5 +1,4 @@
 import { SET_VISIBILITY_FILTER } from '../actions/actionTypes';
-import _pickBy from 'lodash/pickBy';
 
 export default function(
 	state = { tags: [], categories: [], archived: false },
@@ -11,25 +10,24 @@ export default function(
 			let targetId = action.payload.id;
 			let typeArray = state[type];
 
-			if (targetId === 'all') {
-				return { ...state, ...{ [type]: [] } };
-			} else if (targetId === 'archived') {
-				return { ...state, ...{ archived: !state.archived } };
-			} else {
-				if (typeArray.includes(targetId)) {
-					let index = typeArray.indexOf(targetId);
-					let newTypeArray = [
-						...typeArray.slice(0, index),
-						...typeArray.slice(index + 1)
-					];
-					return { ...state, ...{ [type]: newTypeArray } };
-				} else {
+			switch (true) {
+				case targetId === 'clearFilters':
+					return { tags: [], categories: [], archived: false };
+				case targetId === 'all':
+					return { ...state, ...{ [type]: [] } };
+				case targetId === 'archived':
+					return { ...state, ...{ archived: !state.archived } };
+				case typeArray.includes(targetId):
+					return {
+						...state,
+						...{ [type]: typeArray.filter(i => i !== targetId) }
+					};
+				default:
 					return {
 						...state,
 						...{ [type]: [...typeArray, targetId] },
 						currentFilter: type
 					};
-				}
 			}
 		default:
 			return state;

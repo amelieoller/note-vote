@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from './NoteForm.scss';
+
+// Components
 import Checkboxes from '../Checkboxes/Checkboxes';
 
 const NoteForm = ({

@@ -11,24 +11,26 @@ import { getTags } from '../../actions/tagActions';
 
 class Loading extends Component {
 	componentWillMount() {
-		const { userLoading, notesLoading, categoriesLoading, tagsLoading } = this.props;
+		const {
+			userLoading,
+			notesLoading,
+			categoriesLoading,
+			tagsLoading
+		} = this.props;
 
-		// If we haven't tried to load the user, load user
+		// If we haven't tried to load user/notes/categories/tags, load each
 		if (userLoading === undefined) {
 			this.props.getUser();
 		}
 
-		// If we haven't tried to load notes, load notes
 		if (notesLoading === undefined) {
 			this.props.getNotes();
 		}
 
-		// If we haven't tried to load categories, load categories
 		if (categoriesLoading === undefined) {
 			this.props.getCategories();
 		}
 
-		// If we haven't tried to load tags, load tags
 		if (tagsLoading === undefined) {
 			this.props.getTags();
 		}
@@ -67,5 +69,7 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-	connect(mapStateToProps, { getUser, getNotes, getCategories, getTags })(Loading)
+	connect(mapStateToProps, { getUser, getNotes, getCategories, getTags })(
+		Loading
+	)
 );
