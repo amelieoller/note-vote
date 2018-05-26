@@ -3,12 +3,16 @@ import styles from './App.scss';
 import _map from 'lodash/map';
 import { connect } from 'react-redux';
 import { createFilter } from 'react-search-input';
+import _filter from 'lodash/filter';
+import _includes from 'lodash/includes';
+import { arrayify } from '../../shared/helpers';
 
 // Components
 import NoteCard from '../NoteCard/NoteCard';
 import NotePage from '../NotePage/NotePage';
 import Navigation from '../Navigation/Navigation';
 import Sidebar from '../Sidebar/Sidebar';
+import ActiveFilters from '../ActiveFilters/ActiveFilters';
 
 // Actions
 import { getNotes, saveNote, deleteNote } from '../../actions/noteActions';
@@ -21,28 +25,25 @@ import {
 import { getTags, deleteTag, saveTag } from '../../actions/tagActions';
 
 const getVisibleNotes = (notes, visibilityFilter) => {
-	let filteredNotes = {};
-	let filterCategoriesArray = visibilityFilter.categories;
-	let filterTagsArray = visibilityFilter.tags;
+	let filteredNotes;
 
-	if (filterTagsArray.length !== 0 || filterCategoriesArray.length !== 0) {
-		Object.keys(notes)
-			.filter(key => {
-				return (
-					notes[key].tags &&
-					filterTagsArray.every(tag => notes[key].tags.includes(tag)) &&
-					notes[key].categories &&
-					filterCategoriesArray.every(cat =>
-						notes[key].categories.includes(cat)
-					)
-				);
-			})
-			.map(selectedKey => {
-				return (filteredNotes = {
-					...filteredNotes,
-					...{ [selectedKey]: notes[selectedKey] }
-				});
+	if (
+		notes &&
+		(visibilityFilter.tags.length !== 0 ||
+			visibilityFilter.categories.length !== 0)
+	) {
+		_filter(Object.keys(notes), function(key) {
+			return (
+				visibilityFilter.categories.every(cat =>
+					_includes(notes[key].categories, cat)
+				) && visibilityFilter.tags.every(tag => _includes(notes[key].tags, tag))
+			);
+		}).map(selectedKey => {
+			return (filteredNotes = {
+				...filteredNotes,
+				...{ [selectedKey]: notes[selectedKey] }
 			});
+		});
 	} else {
 		filteredNotes = notes;
 	}
@@ -58,8 +59,6 @@ class App extends Component {
 		this.state = {
 			title: '',
 			body: '',
-			categories: [],
-			tags: [],
 			searchTerm: '',
 			formHidden: true
 		};
@@ -121,38 +120,6 @@ class App extends Component {
 		});
 	};
 
-	handleFilter = e => {
-		let type = e.currentTarget.parentNode.id;
-		let targetId = e.currentTarget.id;
-		let typeArray = this.state[type];
-		let filterArray = this.props.visibilityFilter[type];
-
-		switch (true) {
-			case targetId === 'all':
-				this.setState({
-					[type]: []
-				});
-				break;
-			case targetId === 'archived':
-				break;
-			case filterArray.includes(targetId) && typeArray.includes(targetId):
-				let index = typeArray.indexOf(targetId);
-				this.setState({
-					[type]: [...typeArray.slice(0, index), ...typeArray.slice(index + 1)]
-				});
-				break;
-			case !filterArray.includes(targetId) && !typeArray.includes(targetId):
-				this.setState({
-					[type]: [...this.state[type], targetId]
-				});
-				break;
-			default:
-				break;
-		}
-
-		this.props.setVisibilityFilter(targetId, type);
-	};
-
 	searchUpdated = term => {
 		this.setState({ searchTerm: term });
 	};
@@ -165,14 +132,7 @@ class App extends Component {
 	};
 
 	sortProperties = obj => {
-		let sortable = [];
-		for (let key in obj)
-			if (obj.hasOwnProperty(key) && obj[key].uid === this.props.user.uid)
-				sortable.push([key, obj[key]]);
-		sortable.sort(function(a, b) {
-			return b[1].votes - a[1].votes;
-		});
-		return sortable;
+		return arrayify(obj).sort((a, b) => b[1].votes - a[1].votes);
 	};
 
 	render() {
@@ -187,9 +147,9 @@ class App extends Component {
 					formHidden={this.state.formHidden}
 				/>
 				<Sidebar
-					categories={this.sortProperties(this.props.categories)}
-					tags={this.sortProperties(this.props.tags)}
-					handleFilter={this.handleFilter}
+					categories={arrayify(this.props.categories)}
+					tags={arrayify(this.props.tags)}
+					setVisibilityFilter={this.props.setVisibilityFilter}
 					visibilityFilter={this.props.visibilityFilter}
 					saveTag={this.props.saveTag}
 					deleteTag={this.props.deleteTag}
@@ -198,10 +158,11 @@ class App extends Component {
 					uid={this.props.user.uid}
 				/>
 				<main>
+					<ActiveFilters visibilityFilter={this.props.visibilityFilter} />
 					{!this.state.formHidden && (
 						<NotePage
-							categories={this.sortProperties(this.props.categories)}
-							tags={this.sortProperties(this.props.tags)}
+							categories={arrayify(this.props.categories)}
+							tags={arrayify(this.props.tags)}
 							user={this.props.user}
 							saveNote={this.props.saveNote}
 						/>
