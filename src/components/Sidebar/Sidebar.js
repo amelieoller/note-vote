@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styles from './Sidebar.scss';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faTimes from '@fortawesome/fontawesome-free-solid/faTimes';
+import { capitalize } from '../../shared/helpers';
 
 class Sidebar extends Component {
 	constructor() {
@@ -16,7 +17,7 @@ class Sidebar extends Component {
 	handleSubmit = e => {
 		e.preventDefault();
 		const type = e.currentTarget.children[0].name;
-		const saveAction = `save${type.charAt(0).toUpperCase() + type.slice(1)}`;
+		const saveAction = `save${capitalize(type)}`;
 
 		this.props[saveAction]({ name: this.state[type], uid: this.props.uid });
 
@@ -27,8 +28,7 @@ class Sidebar extends Component {
 
 	handleDelete = e => {
 		const type = e.currentTarget.dataset.name;
-		const deleteAction = `delete${type.charAt(0).toUpperCase() +
-			type.slice(1)}`;
+		const deleteAction = `delete${capitalize(type)}`;
 		var result = window.confirm('Are you sure?');
 		result && this.props[deleteAction](e.currentTarget.id);
 	};
@@ -39,8 +39,15 @@ class Sidebar extends Component {
 		});
 	};
 
+	handleFilter = e => {
+		this.props.setVisibilityFilter(
+			e.currentTarget.id,
+			e.currentTarget.parentNode.id
+		);
+	};
+
 	render() {
-		const { visibilityFilter, handleFilter, categories, tags } = this.props;
+		const { visibilityFilter, categories, tags } = this.props;
 
 		return (
 			<aside>
@@ -66,7 +73,7 @@ class Sidebar extends Component {
 								<div
 									className={styles.gridCell}
 									id={cat[0]}
-									onClick={handleFilter}
+									onClick={this.handleFilter}
 								>
 									{cat[1].name}
 								</div>
@@ -94,7 +101,11 @@ class Sidebar extends Component {
 							].join(' ')}
 							id="categories"
 						>
-							<div className={styles.gridCell} id="all" onClick={handleFilter}>
+							<div
+								className={styles.gridCell}
+								id="all"
+								onClick={this.handleFilter}
+							>
 								All Categories
 							</div>
 							<div className={styles.gridCell} />
@@ -130,7 +141,7 @@ class Sidebar extends Component {
 							>
 								<div
 									className={styles.gridCell}
-									onClick={handleFilter}
+									onClick={this.handleFilter}
 									id={tag[0]}
 								>
 									{tag[1].name}
@@ -160,7 +171,11 @@ class Sidebar extends Component {
 							].join(' ')}
 							id="tags"
 						>
-							<div className={styles.gridCell} id="all" onClick={handleFilter}>
+							<div
+								className={styles.gridCell}
+								id="all"
+								onClick={this.handleFilter}
+							>
 								All Tags
 							</div>
 							<div className={styles.gridCell} />
@@ -179,7 +194,11 @@ class Sidebar extends Component {
 				</div>
 				<hr />
 				<span className={visibilityFilter.archived ? styles.active : null}>
-					<div className={styles.gridCell} id="archived" onClick={handleFilter}>
+					<div
+						className={styles.gridCell}
+						id="archived"
+						onClick={this.handleFilter}
+					>
 						Archived Notes
 					</div>
 				</span>
