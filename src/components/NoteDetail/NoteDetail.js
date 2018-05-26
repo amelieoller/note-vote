@@ -1,23 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { arrayify } from '../../shared/helpers';
 
 // Components
 import NoteForm from '../NoteForm/NoteForm';
 
 // Actions
 import { updateNote } from '../../actions/noteActions';
-
-const sortProperties = obj => {
-	let sortable = [];
-	for (let key in obj)
-		if (obj.hasOwnProperty(key)) sortable.push([key, obj[key]]);
-	sortable.sort(function(a, b) {
-		return b[1].votes - a[1].votes;
-	});
-	// array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
-	return sortable;
-};
 
 class NoteDetail extends Component {
 	constructor(props) {
@@ -54,18 +44,15 @@ class NoteDetail extends Component {
 	handleNoteSubmit = e => {
 		e.preventDefault();
 		const { title, body, categories, tags } = this.state;
-		const { updateNote } = this.props;
 		const noteId = this.props.noteId;
-		let note;
 
 		if (title) {
-			note = {
+			this.props.updateNote(noteId, {
 				title: title,
 				body: body,
 				categories: categories,
 				tags: tags
-			};
-			updateNote(noteId, note);
+			});
 			this.props.history.push('/');
 		}
 	};
@@ -94,9 +81,8 @@ function mapStateToProps(state, ownProps) {
 	return {
 		note: state.notes[ownProps.match.params.id],
 		noteId: ownProps.match.params.id,
-		uid: state.user.uid,
-		categories: sortProperties(state.categories),
-		tags: sortProperties(state.tags)
+		categories: arrayify(state.categories),
+		tags: arrayify(state.tags)
 	};
 }
 
