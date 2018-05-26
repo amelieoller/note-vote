@@ -1,0 +1,14 @@
+@import '../../shared/colors.scss';
+@import '../../shared/mixins.scss';
+
+.filterContainer {
+	margin: 10px;
+}
+
+.link {
+	cursor: pointer;
+	color: $blue;
+	&:hover {
+		color: $grey;
+	}
+}
