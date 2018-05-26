@@ -25,29 +25,15 @@ class NoteCard extends Component {
 		};
 	}
 
-	renderCategories = () => {
-		const { note, categories } = this.props;
-		if (note.categories && Object.keys(categories).length !== 0) {
-			return note.categories.map(cat => {
-				if (categories.hasOwnProperty(cat)) {
-					return (
-						<span className={styles.type} key={cat}>
-							{categories[cat].name}
-						</span>
-					);
-				}
-			});
-		}
-	};
+	renderType = (collection, type) => {
+		const { note } = this.props;
 
-	renderTags = () => {
-		const { note, tags } = this.props;
-		if (note.tags && Object.keys(tags).length !== 0) {
-			return note.tags.map(tag => {
-				if (tags.hasOwnProperty(tag)) {
+		if (note[type] && Object.keys(collection).length !== 0) {
+			return note[type].map(item => {
+				if (collection.hasOwnProperty(item)) {
 					return (
-						<span className={styles.type} key={tag}>
-							{tags[tag].name}
+						<span className={styles.type} key={item}>
+							{collection[item].name}
 						</span>
 					);
 				}
@@ -56,9 +42,7 @@ class NoteCard extends Component {
 	};
 
 	onCopy() {
-		let newVote = this.props.note.votes;
-		newVote++;
-		this.props.updateNote(this.props.id, { votes: newVote });
+		this.props.updateNote(this.props.id, { votes: this.props.note.votes + 1 });
 
 		this.setState({
 			copied: true
@@ -81,7 +65,7 @@ class NoteCard extends Component {
 	};
 
 	render() {
-		const { id, note } = this.props;
+		const { id, note, tags, categories } = this.props;
 
 		return (
 			<div className={styles.card}>
@@ -126,17 +110,21 @@ class NoteCard extends Component {
 				<div>
 					<Highlighter codeString={note.body} />
 				</div>
-				<div className={styles.types}>
-					<strong>Categories:</strong>{' '}
-					<span>
-						{this.renderCategories() ? this.renderCategories() : 'None'}
-					</span>
-				</div>
-				<strong> &#183; </strong>
-				<div className={styles.types}>
-					<strong>Tags:</strong>{' '}
-					<span>{this.renderTags() ? this.renderTags() : 'None'}</span>
-				</div>
+				{this.renderType(categories, 'categories') && (
+					<div className={styles.types}>
+						<strong>Categories:</strong>{' '}
+						<span>{this.renderType(categories, 'categories')}</span>
+					</div>
+				)}
+				{this.renderType(tags, 'tags') &&
+					this.renderType(categories, 'categories') && (
+						<strong> &#183; </strong>
+					)}
+				{this.renderType(tags, 'tags') && (
+					<div className={styles.types}>
+						<strong>Tags:</strong> <span>{this.renderType(tags, 'tags')}</span>
+					</div>
+				)}
 			</div>
 		);
 	}
